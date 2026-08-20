@@ -6,7 +6,23 @@ import {
 import { C } from "../../brand.js"
 import { useStore, colleaguesInTown, upcomingBroadcasts } from "../../lib/store.js"
 import { fmtDate, isVip } from "../../lib/policy.js"
-import { Card, Pill, SectionTitle, Btn, KV, Banner, Empty } from "../../components/ui.jsx"
+import { Card, Pill, SectionTitle, Btn, Banner, Empty } from "../../components/ui.jsx"
+import { useWeather } from "../../lib/live.js"
+
+function TripWeather({ city }) {
+  const wx = useWeather(city.lat, city.lon)
+  if (!wx) return null
+  return (
+    <div className="rounded-xl2 px-4 py-3 text-right" style={{ backgroundColor: "#E6F6FF" }}>
+      <div className="flex items-center justify-end gap-1.5 text-2xl font-black" style={{ color: C.confident }}>
+        <CloudSun size={22} /> {wx.temp}°
+      </div>
+      <div className="text-[11px] font-semibold" style={{ color: C.confident }}>
+        {wx.label} · {wx.days[0] ? `${wx.days[0].min}–${wx.days[0].max}°` : ""} <span style={{ color: "#00654C" }}>· live</span>
+      </div>
+    </div>
+  )
+}
 
 export default function Home({ user, goTab }) {
   const s = useStore()
@@ -56,14 +72,7 @@ export default function Home({ user, goTab }) {
                   {fmtDate(next.start)} → {fmtDate(next.end)} · {next.purpose}
                 </div>
               </div>
-              {city?.weather && (
-                <div className="rounded-xl2 px-4 py-3 text-right" style={{ backgroundColor: "#E6F6FF" }}>
-                  <div className="flex items-center justify-end gap-1.5 text-2xl font-black" style={{ color: C.confident }}>
-                    <CloudSun size={22} /> {city.weather.tempNow}
-                  </div>
-                  <div className="text-[11px] font-semibold" style={{ color: C.confident }}>{city.weather.range} · {city.weather.summary}</div>
-                </div>
-              )}
+              {city && <TripWeather city={city} />}
             </div>
 
             {hotel && (
@@ -85,10 +94,6 @@ export default function Home({ user, goTab }) {
                   ))}
                 </div>
               </div>
-            )}
-
-            {city?.weather?.advice && (
-              <p className="mt-3 text-xs leading-relaxed" style={{ color: C.muted }}>{city.weather.advice}</p>
             )}
 
             <div className="mt-4 flex flex-wrap gap-2">

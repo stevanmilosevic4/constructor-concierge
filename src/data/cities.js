@@ -1,360 +1,253 @@
 /* =====================================================================
-   CITY PACKS — seed data.
+   CITY PACKS — factual layer + designated partner areas.
 
-   SAMPLE content pending the real vendor network. The structure is the
-   contract: one record per vendor, per city, with a named owner and a
-   review date — the strategy note's answer to "documents go stale and
-   carry implied endorsement". The concierge admin edits this in the app;
-   edits persist and new partners/discounts appear for every traveller.
+   RULE OF THIS FILE: nothing invented. Two kinds of content live here:
+
+   1. FACTS — currency, emergency numbers, language, plugs, official
+      transport operators, geography, history. Public, verifiable, real.
+   2. PARTNER AREAS — hotels, transfers, restaurants, shops, offers,
+      drivers, insurance. These ship EMPTY. The concierge team populates
+      them in the admin panel as real partnerships are signed, and they
+      appear for every traveller instantly. No fake names, no fake
+      prices, no fake codes — an empty designated slot is honest;
+      a plausible invention is not.
+
+   Weather, exchange rates and the city photo are LIVE (src/lib/live.js),
+   not stored here.
    ===================================================================== */
 
 export const NEAR_CATS = ["Food", "Shop", "Health", "Work", "Move", "Transport", "Service", "Wellbeing"]
 
+/* Every city starts with the full set of empty partner slots. */
+const emptyPartnerAreas = () => ({
+  transfers: [],   // [route, price, note] — partner rate card
+  hotels: [],      // { name, area, address, addressLocal, note, near: [] }
+  offers: [],      // { name, cat, offer, how, code }
+  eat: [],         // [label, note]
+  health: [],      // [label, note]
+  family: [],      // [label, note]
+  wellbeing: [],   // [label, note]
+  wallet: { hotelLocal: "", driver: null, fixedFare: "", insurance: "", embassyNote: "" },
+})
+
 export const SEED_CITIES = {
   Bremen: {
+    ...emptyPartnerAreas(),
     tag: "Campus city",
     country: "Germany",
     currency: "EUR",
+    currencyName: "Euro",
     emergency: "112",
     police: "110",
     tz: "Europe/Berlin",
+    lat: 53.076, lon: 8.807,
+    wikiTitle: "Bremen",
+    language: "German — English widely understood",
+    plugs: "Type F (Schuko) · 230 V",
+    water: "Tap water is safe to drink",
     owner: "Concierge team · review quarterly",
-    updatedAt: "2026-08-01",
-    intro: "Most inbound travel arrives via Hamburg or Frankfurt rather than Bremen airport. Corporate apartments are the preferred stay.",
-    weather: { summary: "Mild and changeable — pack a rain layer in any month", tempNow: "19°", range: "14–22°", advice: "August: light jacket for evenings, rain likely at least one day in three." },
-    wallet: {
-      hotelLocal: "Constructor Apartments, Campusring 1, 28759 Bremen",
-      driver: { name: "Transfer partner dispatch", phone: "+49 421 555 0100" },
-      fixedFare: "BRE → campus €28 · HAM → Bremen €180",
-      insurance: "Group policy CG-TRV-2026-001 · assist line +44 20 7000 0000",
-      embassyNote: "EU citizens: no consular registration needed. Others: nearest consulates are in Hamburg.",
-    },
-    transfers: [
-      ["Hamburg (HAM) → Bremen centre", "€180 fixed", "Pre-book, 60 min free wait"],
-      ["Frankfurt (FRA) → Bremen centre", "€480 fixed", "Rail is usually the better call"],
-      ["Bremen (BRE) → campus", "€28 fixed", "Meet & greet included"],
+    updatedAt: "2026-08-20",
+    intro: "Home of Constructor University's campus. Bremen airport (BRE) is small — many international connections route via Hamburg (HAM) or Frankfurt (FRA). Under the travel policy, corporate apartments in Bremen are the preferred stay.",
+    transport: [
+      ["BSAG — trams & buses", "https://www.bsag.de"],
+      ["Deutsche Bahn — rail to HAM/FRA", "https://www.bahn.de"],
+      ["Bremen Airport (BRE)", "https://www.bremen-airport.com"],
     ],
-    health: [["English-speaking GP practice", "Priority slots under partnership"], ["Emergency", "112"]],
-    family: [["International school", "Admissions contact on file"], ["Kindergarten (bilingual)", "Waiting list typically long — start early"]],
-    eat: [["Dinner, hosting guests", "Partner restaurant, city centre"], ["Quick lunch near campus", "Cafeteria or the market square"]],
-    wellbeing: [
-      ["Gym and pool, Horn-Lehe", "Day pass at the member rate — show the QR"],
-      ["Padel court, Überseestadt", "Two courts, book on the partner link, rackets on site"],
-      ["Tennis club, Bürgerpark", "Guest hours weekdays 8–16"],
-      ["Riverside running path", "Flat 5 km loop from the corporate apartments"],
+    history: [
+      "Bremen has been a trading city for over 1,200 years and was a leading member of the medieval Hanseatic League, the northern-European merchant alliance that made its riverside markets rich. That heritage is still visible on the market square: the ornate Town Hall and the Roland statue (erected 1404) have been UNESCO World Heritage sites since 2004.",
+      "Together with Bremerhaven, the city forms the Free Hanseatic City of Bremen — the smallest of Germany's sixteen federal states, with a fierce independent streak to match. The Schnoor quarter, a maze of 15th- and 16th-century lanes near the river, is the oldest surviving neighbourhood.",
+      "Modern Bremen is a science and aerospace city: satellites, rocket upper stages and the European modules of the International Space Station were built here, and the universities — including Constructor University in the north of the city — anchor one of Germany's densest research landscapes.",
     ],
-    essentials: [["Currency", "EUR"], ["Transport", "BSAG tram — day ticket covers most trips"], ["Tipping", "Round up, 5–10%"]],
-    hotels: [
-      {
-        name: "Corporate apartments, Horn-Lehe",
-        area: "10 min to campus",
-        address: "Campusring 1, 28759 Bremen",
-        addressLocal: "Campusring 1, 28759 Bremen, Deutschland",
-        note: "Preferred option under policy. Book through the designated route.",
-        near: [
-          ["Bakery, breakfast from 06:30", "Food", 3, "Opens early enough for a first flight"],
-          ["Supermarket", "Shop", 5, "Closed Sundays — stock up Saturday"],
-          ["Pharmacy", "Health", 6, "Night rota posted on the door"],
-          ["Riverside running path", "Move", 8, "Flat 5 km loop"],
-          ["Gym and pool", "Wellbeing", 10, "Partner rate with the QR"],
-        ],
-      },
-      {
-        name: "Partner hotel, Altstadt",
-        area: "City centre",
-        address: "Am Markt 1, 28195 Bremen",
-        addressLocal: "Am Markt 1, 28195 Bremen, Deutschland",
-        note: "Corporate rate, breakfast included. Best for guest-facing trips.",
-        near: [
-          ["Partner restaurant, Schnoor", "Food", 4, "Good for hosting four to eight"],
-          ["Coffee, quiet enough for calls", "Work", 2, "Wifi reliable"],
-          ["Pharmacy", "Health", 5, "Central, English spoken"],
-          ["Tram stop to campus", "Transport", 3, "Roughly every 10 minutes"],
-          ["Gift shop", "Shop", 6, "For guest gifts at short notice"],
-        ],
-      },
+    funFacts: [
+      "The Town Musicians of Bremen — donkey, dog, cat and rooster — never actually reach Bremen in the Grimm tale. Rub the donkey's front legs on the statue by the Town Hall for luck.",
+      "The Roland statue has stood on the market square since 1404 — legend says Bremen stays free as long as he stands.",
+      "Bremen is Germany's smallest federal state but has its own parliament, anthem and a football club (Werder) with over a century of history.",
+      "Beck's beer has been brewed in Bremen since 1873 and is exported to more than 100 countries.",
     ],
-    offers: [
-      { name: "Partner hotel Altstadt", cat: "Stay", offer: "18% off the flexible rate, breakfast included", how: "Quote the code when booking or show the QR at check-in", code: "CONSTR-BRE-STAY" },
-      { name: "Airport transfer partner", cat: "Transfer", offer: "Fixed HAM–Bremen and BRE–campus rates, 60 min free wait", how: "Book on the partner link — billed monthly to the entity, you pay nothing", code: "CONSTR-BRE-CAR" },
-      { name: "City-centre restaurant", cat: "Eat", offer: "10% off group dinners, private room waived above eight people", how: "Mention Constructor when reserving", code: "CONSTR-BRE-EAT" },
-      { name: "Gym and pool", cat: "Wellbeing", offer: "Day pass at the member rate", how: "Show the QR at reception", code: "CONSTR-BRE-GYM" },
-      { name: "Padel Überseestadt", cat: "Wellbeing", offer: "Court hour at the club-member rate, rackets included", how: "Book on the partner link, show the QR at the desk", code: "CONSTR-BRE-PADEL" },
-      { name: "Deutsche Bahn business account", cat: "Transport", offer: "Business rates on HAM/FRA–Bremen rail legs, billed centrally", how: "Register once with the QR, then book normally", code: "CONSTR-BRE-RAIL" },
+    essentials: [
+      ["Currency", "Euro (EUR)"],
+      ["Getting around", "BSAG trams and buses — a day ticket covers most trips"],
+      ["Tipping", "Round up or 5–10% — never obligatory"],
+      ["Shops", "Closed on Sundays — plan Saturday"],
     ],
   },
 
   Istanbul: {
+    ...emptyPartnerAreas(),
     tag: "High volume",
     country: "Türkiye",
     currency: "TRY",
+    currencyName: "Turkish lira",
     emergency: "112",
     police: "155",
     tz: "Europe/Istanbul",
+    lat: 41.008, lon: 28.978,
+    wikiTitle: "Istanbul",
+    language: "Turkish — English common in business districts",
+    plugs: "Type F · 230 V",
+    water: "Drink bottled water — tap is used for washing",
     owner: "Concierge team · review quarterly",
-    updatedAt: "2026-08-01",
-    intro: "Airport fast-track matters more than the car here. Two airports — confirm IST or SAW before booking anything.",
-    weather: { summary: "Hot and humid through August", tempNow: "29°", range: "24–31°", advice: "Meetings run on air-conditioning; carry water, expect 90-minute crosstown traffic." },
-    wallet: {
-      hotelLocal: "Levent Mah., Büyükdere Cad. 100, 34394 Şişli/İstanbul",
-      driver: { name: "Partner dispatch (24/7)", phone: "+90 212 555 0134" },
-      fixedFare: "IST → Levent €45 · SAW → European side €60",
-      insurance: "Group policy CG-TRV-2026-001 · assist line +44 20 7000 0000",
-      embassyNote: "Keep your passport with you — hotels register guests with it. Consulates are on the European side.",
-    },
-    transfers: [
-      ["IST → Levent / Maslak", "€45 fixed", "Meet & greet inside arrivals"],
-      ["IST → Sultanahmet", "€55 fixed", "Allow 90 min in traffic"],
-      ["SAW → European side", "€60 fixed", "Confirm the airport first"],
+    updatedAt: "2026-08-20",
+    intro: "Two airports — confirm IST (European side) or SAW (Asian side) before booking anything. Crosstown traffic is measured in hours, not kilometres: plan meetings by district.",
+    transport: [
+      ["Istanbulkart — metro, tram, ferry", "https://www.istanbulkart.istanbul"],
+      ["Metro İstanbul — network map", "https://www.metro.istanbul"],
+      ["Istanbul Airport (IST)", "https://www.istairport.com"],
+      ["Sabiha Gökçen (SAW)", "https://www.sabihagokcen.aero"],
     ],
-    health: [["International hospital", "English-speaking, direct billing"], ["Emergency", "112"]],
-    family: [["International schools", "Several options, listed by district"], ["Paediatric clinic", "Partner rate"]],
-    eat: [["Client dinner", "Bosphorus-side partner restaurant"], ["Team lunch", "Local partner, near the office"]],
-    wellbeing: [
-      ["Hotel spa & hammam, Levent", "Partner rate on the traditional hammam — book a day ahead"],
-      ["Gym, Kanyon", "Day pass under the corporate agreement"],
-      ["Tennis, ENKA Sadi Gülçelik", "Guest booking via the partner contact"],
-      ["Bosphorus morning run", "Bebek–Emirgan shore path, flat, shaded after 07:00"],
+    history: [
+      "Founded as Byzantium around 660 BC, renamed Constantinople in 330 AD when it became the capital of the Roman Empire, and finally Istanbul — this is the only major city in the world that sits on two continents, and it served as an imperial capital for almost 1,600 years under the Romans, Byzantines and Ottomans.",
+      "Hagia Sophia, completed in 537 AD, was the largest cathedral on earth for nearly a thousand years before becoming a mosque; the Grand Bazaar, begun in 1455, remains one of the largest and oldest covered markets anywhere, with thousands of shops on its covered streets.",
+      "The Bosphorus strait through the city's heart links the Black Sea to the Mediterranean and has decided empires' fates for millennia. Today's Istanbul, home to more than 15 million people, is Türkiye's commercial engine — banks and business in Levent and Maslak, history on the peninsula, and ferries stitching the two continents together.",
     ],
-    essentials: [["Currency", "TRY"], ["Fast-track", "Airport meet-and-assist — worth it for guests"], ["Transport", "Istanbulkart for metro and ferry"]],
-    hotels: [
-      {
-        name: "Partner hotel, Levent",
-        area: "Business district",
-        address: "Büyükdere Cad. 100, Levent, Şişli",
-        addressLocal: "Levent Mah., Büyükdere Cad. No:100, 34394 Şişli/İstanbul",
-        note: "Corporate rate, walking distance to most meetings.",
-        near: [
-          ["Partner restaurant, meze", "Food", 6, "Reliable for client dinners"],
-          ["Shopping centre", "Shop", 4, "Pharmacy and mobile top-ups inside"],
-          ["Coffee, laptop-friendly", "Work", 2, "Quiet before 10:00"],
-          ["Metro station", "Transport", 5, "Direct to the old city"],
-          ["Pharmacy", "Health", 3, "24h rota nearby"],
-          ["Hotel spa & hammam", "Wellbeing", 0, "In the building — partner rate"],
-        ],
-      },
-      {
-        name: "Serviced apartments, Şişli",
-        area: "Mid-town",
-        address: "Halaskargazi Cad., Şişli",
-        addressLocal: "Halaskargazi Cad., 34371 Şişli/İstanbul",
-        note: "Better value beyond ten nights. Kitchen and laundry in the unit.",
-        near: [
-          ["Grocery", "Shop", 3, "Open late"],
-          ["Local canteen", "Food", 5, "Fast, inexpensive lunch"],
-          ["Laundry", "Service", 4, "Same-day if dropped before 10:00"],
-          ["Park loop", "Move", 7, "Shaded, decent for a morning run"],
-        ],
-      },
+    funFacts: [
+      "Istanbul's Tünel funicular opened in 1875 — the second-oldest underground railway in the world after London's.",
+      "Tulips are named into European history from Ottoman gardens — the Netherlands' famous flowers began as Istanbul exports.",
+      "Agatha Christie is said to have written Murder on the Orient Express at the Pera Palace Hotel, room 411.",
+      "The Grand Bazaar draws hundreds of thousands of visitors a day — arguably the world's oldest shopping mall, trading since 1455.",
     ],
-    offers: [
-      { name: "Airport fast-track", cat: "Airport", offer: "Meet-and-assist through immigration at the corporate rate", how: "Book 24h ahead through the partner link", code: "CONSTR-IST-FAST" },
-      { name: "Transfer partner", cat: "Transfer", offer: "Fixed €45 IST–Levent, child seats free", how: "Partner app under the company account — no payment at the car", code: "CONSTR-IST-CAR" },
-      { name: "Partner hotel Levent", cat: "Stay", offer: "Corporate rate, late checkout to 16:00 subject to availability", how: "Quote the code when booking", code: "CONSTR-IST-STAY" },
-      { name: "International hospital", cat: "Health", offer: "Priority appointments, direct billing to insurance", how: "Show the QR at the international desk", code: "CONSTR-IST-MED" },
-      { name: "Bosphorus restaurant", cat: "Eat", offer: "Set menu at a fixed price for groups of six or more", how: "Reserve by phone and mention Constructor", code: "CONSTR-IST-EAT" },
-      { name: "Hammam & spa, Levent", cat: "Wellbeing", offer: "Partner rate on the hammam ritual", how: "Show the QR when booking", code: "CONSTR-IST-SPA" },
+    essentials: [
+      ["Currency", "Turkish lira (TRY)"],
+      ["Getting around", "Istanbulkart works on metro, tram, funicular and ferry"],
+      ["Traffic", "Allow 90+ minutes for crosstown journeys at peak"],
+      ["Airports", "Always confirm IST vs SAW — they are 80 km apart"],
     ],
   },
 
   Belgrade: {
+    ...emptyPartnerAreas(),
     tag: "Regional hub",
     country: "Serbia",
     currency: "RSD",
-    emergency: "194 / 112",
+    currencyName: "Serbian dinar",
+    emergency: "194 (ambulance) · 112",
     police: "192",
     tz: "Europe/Belgrade",
+    lat: 44.816, lon: 20.460,
+    wikiTitle: "Belgrade",
+    language: "Serbian (Cyrillic and Latin scripts) — English widespread",
+    plugs: "Type F · 230 V",
+    water: "Tap water is safe to drink",
     owner: "Concierge team · review quarterly",
-    updatedAt: "2026-08-01",
-    intro: "Compact centre, short transfers. Receipts: scans are accepted in Serbia.",
-    weather: { summary: "Hot continental summer", tempNow: "31°", range: "22–34°", advice: "August afternoons are hot — schedule walking meetings before noon." },
-    wallet: {
-      hotelLocal: "Хотел партнер, Његошева 10, 11000 Београд",
-      driver: { name: "Partner dispatch", phone: "+381 11 555 0170" },
-      fixedFare: "BEG → centre €25 · Belgrade → Novi Sad €90",
-      insurance: "Group policy CG-TRV-2026-001 · assist line +44 20 7000 0000",
-      embassyNote: "Scans of receipts are accepted in Serbia — photograph everything anyway.",
-    },
-    transfers: [["BEG → city centre", "€25 fixed", "45 min free wait"], ["Belgrade → Novi Sad", "€90 fixed", "Frequent corridor"]],
-    health: [["Private clinic", "Same-day appointments under partnership"], ["Emergency", "194 / 112"]],
-    family: [["International school", "Admissions contact on file"], ["Kindergarten", "English-language options in the centre"]],
-    eat: [["Hosting", "Partner restaurant, Skadarlija"], ["Everyday", "Bakery and café list in the pack"]],
-    wellbeing: [
-      ["Padel centre, Ada Ciganlija", "Partner rate weekday mornings"],
-      ["Gym, Vračar", "Day pass with the QR"],
-      ["Ada lake loop", "8 km flat circuit, shaded stretches"],
-      ["Spa, Stari Grad", "Partner rate on massages, book same-day"],
+    updatedAt: "2026-08-20",
+    intro: "Compact centre at the meeting of two great rivers, short transfers from the airport. Receipts: scans are accepted in Serbia under the expense policy — no hard copies needed.",
+    transport: [
+      ["GSP Beograd — public transport", "https://www.gsp.rs"],
+      ["Belgrade Nikola Tesla Airport (BEG)", "https://beg.aero"],
+      ["Srbija Voz — rail (incl. Novi Sad fast line)", "https://www.srbijavoz.rs"],
     ],
-    essentials: [["Currency", "RSD"], ["Receipts", "Scans accepted — no hard copies needed"], ["Transport", "Taxi apps are reliable"]],
-    hotels: [
-      {
-        name: "Partner hotel, Vračar",
-        area: "Central, quiet",
-        address: "Njegoševa 10, Belgrade",
-        addressLocal: "Његошева 10, 11000 Београд, Србија",
-        note: "Corporate rate. Walkable to most of the centre.",
-        near: [
-          ["Partner restaurant", "Food", 5, "Traditional, good for hosting"],
-          ["Bakery", "Food", 2, "Open from 06:00"],
-          ["Pharmacy", "Health", 4, "24h branch two streets over"],
-          ["Coworking", "Work", 6, "Day passes available"],
-          ["Gym", "Wellbeing", 5, "Partner day pass"],
-        ],
-      },
-      {
-        name: "Serviced apartments, Dorćol",
-        area: "Old town edge",
-        address: "Cara Dušana 25, Belgrade",
-        addressLocal: "Цара Душана 25, 11000 Београд, Србија",
-        note: "For longer stays. Near the river.",
-        near: [
-          ["Green market", "Shop", 4, "Mornings only"],
-          ["Café row", "Work", 3, "Wifi varies — ask before settling in"],
-          ["Riverside path", "Move", 6, "Long flat run"],
-          ["Grocery", "Shop", 2, "Open Sundays"],
-        ],
-      },
+    history: [
+      "Belgrade — Beograd, 'the white city' — guards the confluence of the Sava and the Danube, a position so strategic that the city has been fought over and rebuilt dozens of times in its long history. Some of Europe's earliest settled cultures, including the Vinča civilisation, flourished on this stretch of the Danube more than 7,000 years ago.",
+      "The Kalemegdan fortress above the river junction carries layers of Celtic, Roman, Byzantine, Ottoman and Austrian construction — a stone diary of everyone who wanted the crossing. Below it, the bohemian lane of Skadarlija preserved the café-and-poets culture of the 1900s.",
+      "Modern Belgrade is the Balkans' largest city and Serbia's political, commercial and cultural centre — famous for an unmatched café culture, river-barge nightlife on the Sava, and the Nikola Tesla Museum, which safeguards the inventor's archive and his ashes.",
     ],
-    offers: [
-      { name: "Partner hotel Vračar", cat: "Stay", offer: "15% off the flexible rate", how: "Quote the code when booking", code: "CONSTR-BEG-STAY" },
-      { name: "Transfer partner", cat: "Transfer", offer: "€25 fixed airport run, monthly invoicing", how: "Partner link under the company account", code: "CONSTR-BEG-CAR" },
-      { name: "Private clinic", cat: "Health", offer: "Same-day appointments, English-speaking", how: "Show the QR at reception", code: "CONSTR-BEG-MED" },
-      { name: "Skadarlija restaurant", cat: "Eat", offer: "Group menu at a fixed price, welcome drink included", how: "Reserve and mention Constructor", code: "CONSTR-BEG-EAT" },
-      { name: "Padel Ada Ciganlija", cat: "Wellbeing", offer: "Court hour at the partner rate, weekday mornings", how: "Show the QR at the desk", code: "CONSTR-BEG-PADEL" },
+    funFacts: [
+      "Belgrade is among the oldest continuously inhabited cities in Europe — settled for over 7,000 years.",
+      "The city has been destroyed and rebuilt around forty times — its coat of arms shows a fortress on the rivers for a reason.",
+      "The Nikola Tesla Museum holds the scientist's complete personal archive — and his ashes, in a gilded sphere.",
+      "Skadarlija, the cobbled bohemian street, has functioned as the city's artists' quarter for more than a century — Belgrade's answer to Montmartre.",
+    ],
+    essentials: [
+      ["Currency", "Serbian dinar (RSD) — cards widely accepted, keep small cash for kafanas"],
+      ["Getting around", "The centre is walkable; ride-hailing apps are reliable"],
+      ["Receipts", "Scans accepted under the expense policy — no hard copies needed"],
+      ["Language", "Street signs appear in both Cyrillic and Latin scripts"],
     ],
   },
 
   "São Paulo": {
+    ...emptyPartnerAreas(),
     tag: "EBAC",
     country: "Brazil",
     currency: "BRL",
-    emergency: "192",
+    currencyName: "Brazilian real",
+    emergency: "192 (ambulance) · 193 (fire)",
     police: "190",
     tz: "America/Sao_Paulo",
+    lat: -23.550, lon: -46.633,
+    wikiTitle: "São Paulo",
+    language: "Portuguese — English limited outside business settings",
+    plugs: "Type N · 127/220 V (check the socket — both voltages exist)",
+    water: "Drink bottled or filtered water",
     owner: "Concierge team · review quarterly",
-    updatedAt: "2026-08-01",
-    intro: "Security-vetted drivers only. Confirm whether armoured transport is expected for guest-level travel.",
-    weather: { summary: "Southern-hemisphere winter — mild, occasionally wet", tempNow: "22°", range: "13–24°", advice: "August is dry season but evenings cool quickly. A jacket, not a coat." },
-    wallet: {
-      hotelLocal: "R. Joaquim Floriano 100, Itaim Bibi, São Paulo – SP, 04534-000",
-      driver: { name: "Vetted driver desk", phone: "+55 11 5555 0190" },
-      fixedFare: "GRU → Itaim Bibi R$390 · CGH → Pinheiros R$180",
-      insurance: "Group policy CG-TRV-2026-001 · assist line +44 20 7000 0000",
-      embassyNote: "Pre-booked cars only — no street hails. Keep this screen available offline.",
-    },
-    transfers: [["GRU → Itaim Bibi", "R$390 fixed", "Vetted driver, tracked"], ["CGH → Pinheiros", "R$180 fixed", "Domestic arrivals"]],
-    health: [["International hospital", "English-speaking, direct billing"], ["Emergency", "192"]],
-    family: [["International schools", "Listed by district"], ["Paediatric care", "Partner clinic"]],
-    eat: [["Hosting", "Partner restaurant, Jardins"], ["Everyday", "Office-adjacent list"]],
-    wellbeing: [
-      ["Gym, Itaim Bibi", "Partner day pass, towel included"],
-      ["Ibirapuera Park", "Morning running, busy by 08:00 — go early"],
-      ["Tennis academy, Moema", "Guest hours via the partner contact"],
+    updatedAt: "2026-08-20",
+    intro: "The largest city in the Americas' southern hemisphere. Two airports: GRU (international) and CGH (domestic, close to the centre). Use pre-arranged transport rather than street hails.",
+    transport: [
+      ["Metrô de São Paulo", "https://www.metro.sp.gov.br"],
+      ["SPTrans — buses", "https://www.sptrans.com.br"],
+      ["Guarulhos Airport (GRU)", "https://www.gru.com.br"],
+      ["Congonhas Airport (CGH)", "https://www.aena.com.br"],
     ],
-    essentials: [["Currency", "BRL"], ["Safety", "Pre-booked cars only — no street hails"], ["Visa", "Check requirements by passport"]],
-    hotels: [
-      {
-        name: "Partner hotel, Itaim Bibi",
-        area: "Near the office",
-        address: "R. Joaquim Floriano 100, Itaim Bibi",
-        addressLocal: "R. Joaquim Floriano 100, Itaim Bibi, São Paulo – SP, 04534-000",
-        note: "Corporate rate. Comfortable for walking during the day.",
-        near: [
-          ["Partner restaurant", "Food", 5, "Good for client dinners"],
-          ["Pharmacy", "Health", 3, "Chain, open 24h"],
-          ["Coffee", "Work", 2, "Wifi reliable"],
-          ["Grocery", "Shop", 6, "Card accepted everywhere"],
-          ["Gym", "Wellbeing", 4, "Partner day pass"],
-        ],
-      },
-      {
-        name: "Serviced apartments, Jardins",
-        area: "Central",
-        address: "Alameda Santos 800, Jardins",
-        addressLocal: "Alameda Santos 800, Jardim Paulista, São Paulo – SP",
-        note: "For stays beyond two weeks.",
-        near: [
-          ["Restaurant row", "Food", 4, "Wide range — book Fridays ahead"],
-          ["Park", "Move", 9, "Morning running, busy by 08:00"],
-          ["Laundry", "Service", 3, "Two-day turnaround"],
-          ["Pharmacy", "Health", 4, "Delivers to the building"],
-        ],
-      },
+    history: [
+      "São Paulo was founded in 1554 by Jesuit missionaries on a plateau above the coast, and stayed a modest town for three centuries — until the 19th-century coffee boom turned it into the powerhouse of Brazil. Railways, banks and wave after wave of immigration followed the coffee money.",
+      "That immigration made the city one of the most diverse on earth: the largest Japanese community outside Japan centres on the Liberdade district, and Italian, Portuguese, Lebanese, German and many other communities shaped its food and neighbourhoods.",
+      "Today greater São Paulo is home to over 20 million people and produces a significant share of Brazil's GDP. Avenida Paulista is the symbolic spine — banks and cultural centres over a buried valley — and MASP's floating concrete gallery is the city's architectural signature.",
     ],
-    offers: [
-      { name: "Partner hotel Itaim Bibi", cat: "Stay", offer: "Corporate rate including breakfast and airport pickup", how: "Book through the partner link", code: "CONSTR-SAO-STAY" },
-      { name: "Vetted driver service", cat: "Transfer", offer: "Fixed GRU and CGH rates, tracked vehicles", how: "Book 12h ahead through the concierge link", code: "CONSTR-SAO-CAR" },
-      { name: "International hospital", cat: "Health", offer: "English-speaking desk, direct billing", how: "Show the QR at the international desk", code: "CONSTR-SAO-MED" },
+    funFacts: [
+      "São Paulo's helicopter fleet is one of the largest of any city in the world — rooftop helipads dot the skyline.",
+      "Liberdade hosts the largest Japanese community outside Japan — its street lamps are torii-inspired.",
+      "Paulistanos are said to eat around a million pizzas a day — a legacy of massive Italian immigration.",
+      "The city sits ~800 m above sea level, which keeps it milder than its latitude suggests — locals call the drizzle 'garoa'.",
+    ],
+    essentials: [
+      ["Currency", "Brazilian real (BRL) — cards accepted almost everywhere"],
+      ["Getting around", "Metro is clean and fast; use pre-arranged cars otherwise"],
+      ["Safety", "Pre-booked transport only — no street hails"],
+      ["Seasons", "Southern hemisphere — August is mild dry-season winter"],
     ],
   },
 
   Schaffhausen: {
+    ...emptyPartnerAreas(),
     tag: "Corporate apartments",
     country: "Switzerland",
     currency: "CHF",
-    emergency: "144 / 112",
+    currencyName: "Swiss franc",
+    emergency: "144 (ambulance) · 112",
     police: "117",
     tz: "Europe/Zurich",
+    lat: 47.696, lon: 8.635,
+    wikiTitle: "Schaffhausen",
+    language: "German — English common",
+    plugs: "Type J · 230 V (Swiss three-pin — EU plugs need an adapter)",
+    water: "Tap water is excellent",
     owner: "Concierge team · review quarterly",
-    updatedAt: "2026-08-01",
-    intro: "Corporate apartments are the preferred accommodation. Swiss per-diem rates are set by cantonal approval.",
-    weather: { summary: "Pleasant late summer", tempNow: "23°", range: "14–26°", advice: "Rhine-side evenings cool fast. Trains run on time; you should too." },
-    wallet: {
-      hotelLocal: "Corporate Apartments, Vordergasse 20, 8200 Schaffhausen",
-      driver: { name: "Partner dispatch", phone: "+41 52 555 0120" },
-      fixedFare: "ZRH → Schaffhausen CHF 140 · station → office CHF 20",
-      insurance: "Group policy CG-TRV-2026-001 · assist line +44 20 7000 0000",
-      embassyNote: "Per diems follow the cantonal ruling, not the global figure.",
-    },
-    transfers: [["Zurich (ZRH) → Schaffhausen", "CHF 140 fixed", "Train is often faster"], ["Station → office", "CHF 20 fixed", "Short hop"]],
-    health: [["Local practice", "English-speaking"], ["Emergency", "144 / 112"]],
-    family: [["International school (Zurich area)", "Commute is significant"], ["Childcare", "Limited — book far ahead"]],
-    eat: [["Hosting", "Old town partner restaurant"], ["Everyday", "Canteen and café list"]],
-    wellbeing: [
-      ["Rhine path", "Flat riverside route from the apartments"],
-      ["Municipal pool, Rhybadi", "Historic river bath — summer only"],
-      ["Gym, old town", "Partner day pass"],
+    updatedAt: "2026-08-20",
+    intro: "Reached fastest by rail from Zurich airport (ZRH) — the train usually beats a car. Under the travel policy, corporate apartments in Schaffhausen are the preferred stay. Swiss per-diem treatment follows the cantonal ruling.",
+    transport: [
+      ["SBB — rail from ZRH and Zurich", "https://www.sbb.ch"],
+      ["VBSH — city buses", "https://www.vbsh.ch"],
+      ["Zurich Airport (ZRH)", "https://www.zurich-airport.com"],
     ],
-    essentials: [["Currency", "CHF"], ["Per diems", "Cantonal rates apply, not the global figure"], ["Transport", "Rail — half-fare card pays back quickly"]],
-    hotels: [
-      {
-        name: "Corporate apartments",
-        area: "Walking distance to the office",
-        address: "Vordergasse 20, 8200 Schaffhausen",
-        addressLocal: "Vordergasse 20, 8200 Schaffhausen, Schweiz",
-        note: "Preferred option under policy. Book through the designated route.",
-        near: [
-          ["Bakery", "Food", 3, "Closes early on Saturdays"],
-          ["Supermarket", "Shop", 4, "Closed Sundays"],
-          ["Pharmacy", "Health", 5, "Limited weekend hours"],
-          ["Rhine path", "Move", 7, "Flat riverside route"],
-        ],
-      },
-      {
-        name: "Partner hotel, old town",
-        area: "Centre",
-        address: "Herrenacker 7, 8200 Schaffhausen",
-        addressLocal: "Herrenacker 7, 8200 Schaffhausen, Schweiz",
-        note: "Fallback when the apartments are full.",
-        near: [
-          ["Partner restaurant", "Food", 3, "Book ahead midweek"],
-          ["Train station", "Transport", 6, "Direct to Zurich"],
-          ["Coffee", "Work", 2, "Quiet mornings"],
-        ],
-      },
+    history: [
+      "Schaffhausen grew up in the Middle Ages exactly where the Rhine stops being navigable: at the Rhine Falls, Europe's most powerful waterfall, every cargo had to leave the river and cross land — and the town that handled the portage prospered on it.",
+      "The Munot, the circular 16th-century fortress above the old town, was built to a concept sketched by Albrecht Dürer and is still climbed today for its view; a warden actually lives in the tower and rings the Munot bell by hand every evening at nine.",
+      "The old town below is one of Switzerland's best preserved, famous for painted facades and ornate bay windows (Erker). Since 1868 the city has also been home to IWC, one of the great Swiss watchmakers — precision industry beside a medieval core, which is Schaffhausen in one sentence.",
     ],
-    offers: [
-      { name: "Partner hotel old town", cat: "Stay", offer: "Corporate rate, breakfast included", how: "Quote the code when booking", code: "CONSTR-SHA-STAY" },
-      { name: "Rail business account", cat: "Transport", offer: "Business travel rates, billed centrally", how: "Register once with the QR, then book normally", code: "CONSTR-SHA-RAIL" },
-      { name: "Old town restaurant", cat: "Eat", offer: "10% off dinner for groups of four or more", how: "Mention Constructor when reserving", code: "CONSTR-SHA-EAT" },
+    funFacts: [
+      "The Rhine Falls near the city are Europe's most powerful waterfall — about 600,000 litres per second in summer.",
+      "Deer really do live in the Munot fortress moat — the herd has been kept there since 1905.",
+      "Schaffhausen canton lies almost entirely north of the Rhine — surrounded by Germany on three sides.",
+      "IWC has made watches in Schaffhausen since 1868 — founded, unusually, by an American engineer.",
+    ],
+    essentials: [
+      ["Currency", "Swiss franc (CHF) — euros sometimes accepted, change given in francs"],
+      ["Getting around", "Rail first — the SBB Half Fare Card pays for itself quickly"],
+      ["Per diems", "Cantonal rates apply, not the global figure"],
+      ["Shops", "Close early Saturday, closed Sunday"],
     ],
   },
 }
 
+/* Currencies shown in every city's rate card, per the brief:
+   local ↔ EUR, USD, CHF, TRY. */
+export const RATE_CURRENCIES = ["EUR", "USD", "CHF", "TRY"]
+
 /* ------------------------------------------------------------------ */
-/*  Visa matrix — SAMPLE corridors. The concierge team maintains the   */
-/*  table; the vetted handler does the work; Mobility owns the case.   */
-/*  Passport validity: warn inside 6 months of expiry, always.         */
+/*  Visa matrix — FACTUAL entry requirements by passport/destination.  */
+/*  Maintained by the concierge team; Mobility (le@constructor.org)    */
+/*  owns the immigration question itself. Rules change — verify with   */
+/*  Mobility before relying on a row.                                  */
 /* ------------------------------------------------------------------ */
 
 export const VISA_MATRIX = [
@@ -367,16 +260,16 @@ export const VISA_MATRIX = [
   { passport: "Serbia",          dest: "Germany",     need: "none",   note: "Visa-free up to 90 days in any 180 (biometric passport)." },
   { passport: "Serbia",          dest: "Türkiye",     need: "none",   note: "Visa-free up to 90 days." },
   { passport: "Serbia",          dest: "Brazil",      need: "none",   note: "Visa-free up to 90 days." },
-  { passport: "Türkiye",         dest: "Germany",     need: "visa",   note: "Schengen visa required. Vetted handler: 3–4 weeks typical. Invitation letter template available." },
+  { passport: "Türkiye",         dest: "Germany",     need: "visa",   note: "Schengen visa required — start 4+ weeks ahead. Invitation letter from the entity helps." },
   { passport: "Türkiye",         dest: "Serbia",      need: "none",   note: "Visa-free up to 90 days." },
-  { passport: "India",           dest: "Germany",     need: "visa",   note: "Schengen visa. Handler needs 4+ weeks. Invitation letter from the entity required." },
-  { passport: "India",           dest: "Türkiye",     need: "evisa",  note: "e-Visa online if holding a valid Schengen/US/UK visa; otherwise sticker visa via the handler." },
-  { passport: "China",           dest: "Germany",     need: "visa",   note: "Schengen visa. Handler needs 4+ weeks." },
+  { passport: "India",           dest: "Germany",     need: "visa",   note: "Schengen visa — start 4+ weeks ahead. Invitation letter from the entity required." },
+  { passport: "India",           dest: "Türkiye",     need: "evisa",  note: "e-Visa online if holding a valid Schengen/US/UK visa; otherwise sticker visa." },
+  { passport: "China",           dest: "Germany",     need: "visa",   note: "Schengen visa — start 4+ weeks ahead." },
   { passport: "United States",   dest: "Germany",     need: "none",   note: "Visa-free up to 90 days in any 180." },
   { passport: "United States",   dest: "Türkiye",     need: "evisa",  note: "e-Visa online, minutes to obtain. Passport valid 150+ days." },
   { passport: "United States",   dest: "Brazil",      need: "evisa",  note: "e-Visa required since 2025. Apply 2+ weeks ahead." },
-  { passport: "United Kingdom",  dest: "Germany",     need: "none",   note: "Visa-free up to 90 days in any 180. Passport stamped — watch the running total." },
-  { passport: "Nigeria",         dest: "Germany",     need: "visa",   note: "Schengen visa. Handler needs 6+ weeks — start immediately." },
+  { passport: "United Kingdom",  dest: "Germany",     need: "none",   note: "Visa-free up to 90 days in any 180 — watch the Schengen-wide running total." },
+  { passport: "Nigeria",         dest: "Germany",     need: "visa",   note: "Schengen visa — start 6+ weeks ahead." },
   { passport: "Russia",          dest: "Germany",     need: "visa",   note: "Schengen visa. Processing is slow and variable — talk to Mobility before promising dates." },
 ]
 

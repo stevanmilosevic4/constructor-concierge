@@ -49,8 +49,16 @@ export default function Login() {
     try {
       if (await verifyAdminCode(code)) {
         const s = getState()
-        const admin = s.people.find((p) => p.role === "admin") || s.people[0]
-        update(() => ({ session: { userId: admin.id } }))
+        const admin = s.people.find((p) => p.role === "admin")
+        if (admin) {
+          update(() => ({ session: { userId: admin.id } }))
+        } else {
+          // The registry can end up with no admin (edited away). The code is
+          // the source of authority here, so restore the team account rather
+          // than locking the team out — and never impersonate a traveller.
+          const fresh = { id: uid(), email: "concierge@constructor.org", name: "Concierge team", role: "admin", level: "Employee", entity: "Constructor Knowledge" }
+          update((st) => ({ people: [...st.people, fresh], session: { userId: fresh.id } }))
+        }
       } else {
         setError("That code isn't right. Check with the concierge team.")
       }

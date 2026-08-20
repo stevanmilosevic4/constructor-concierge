@@ -36,7 +36,7 @@ function MeetingForm({ initial, onSave, onCancel }) {
 export default function Agenda({ user }) {
   const s = useStore()
   const isEa = user.role === "ea"
-  const principal = (isEa && s.people.find((u) => u.email === user.assistsEmail)) || user
+  const principal = (isEa && s.people.find((u) => u.email.toLowerCase() === (user.assistsEmail || "").toLowerCase())) || user
   const canEdit = isEa || user.role === "employee"
   const [editing, setEditing] = useState(null) // "new" | meeting id
   const meetings = s.meetings

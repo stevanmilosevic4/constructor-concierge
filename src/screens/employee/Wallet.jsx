@@ -3,20 +3,26 @@ import { Wallet, Phone, MapPin, Car, ShieldCheck, Printer, WifiOff, Siren } from
 import { C } from "../../brand.js"
 import { useStore } from "../../lib/store.js"
 import { fmtDate } from "../../lib/policy.js"
-import { Card, SectionTitle, Btn, KV, Banner, Empty } from "../../components/ui.jsx"
+import { SectionTitle, Btn, Banner, Empty } from "../../components/ui.jsx"
 
 /* The travel wallet: one screen that still works with no signal and no
-   roaming. Everything on it is text — no lookups, no network calls —
-   and it prints onto one card-sized page. */
+   roaming. Everything on it is plain text — no lookups, no network calls
+   — and it prints onto one card-sized page. Partner fields (driver,
+   fixed fares, insurance) are populated by the concierge team; the
+   emergency numbers are real today. */
+
+const NotSet = ({ children }) => (
+  <span className="text-xs italic" style={{ color: C.muted }}>{children || "To be added by the concierge team"}</span>
+)
 
 export default function WalletScreen({ user }) {
   const s = useStore()
-  const myTrips = s.trips.filter((t) => t.userId === user.id)
+  const myTrips = s.trips.filter((t) => t.userId === user.id && s.cities[t.city])
   const [tripId, setTripId] = useState(myTrips.find((t) => t.end >= new Date().toISOString().slice(0, 10))?.id || myTrips[0]?.id)
   const trip = myTrips.find((t) => t.id === tripId)
   const city = trip ? s.cities[trip.city] : null
   const hotel = city?.hotels?.[trip.hotelIdx ?? 0]
-  const w = city?.wallet
+  const w = city?.wallet || {}
 
   if (!trip || !city) {
     return (
@@ -30,7 +36,7 @@ export default function WalletScreen({ user }) {
   return (
     <div className="space-y-5">
       <div className="no-print flex flex-wrap items-end justify-between gap-3">
-        <SectionTitle sub="Worth its weight in Istanbul and São Paulo: everything below is plain text, loads from the device, and works with no signal and no roaming. Print it and it fits a jacket pocket.">
+        <SectionTitle sub="Everything below is plain text, loads from the device, and works with no signal and no roaming. Print it and it fits a jacket pocket.">
           Travel wallet
         </SectionTitle>
         <div className="flex items-center gap-2">
@@ -50,7 +56,6 @@ export default function WalletScreen({ user }) {
 
       <div className="mx-auto max-w-lg">
         <div className="overflow-hidden rounded-xl2 shadow-pop" style={{ border: `1px solid ${C.rule}` }}>
-          {/* Card header */}
           <div className="p-5" style={{ backgroundColor: C.navy }}>
             <div className="flex items-center justify-between">
               <div>
@@ -70,10 +75,18 @@ export default function WalletScreen({ user }) {
               <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest" style={{ color: C.confident }}>
                 <MapPin size={12} /> Hotel — show this to any driver
               </div>
-              <div className="mt-1 text-sm font-bold" style={{ color: C.navy }}>{hotel?.name}</div>
-              <div className="mt-1 rounded-lg p-3 text-base font-semibold leading-snug" style={{ backgroundColor: C.paper, color: C.ink }}>
-                {hotel?.addressLocal || hotel?.address || w?.hotelLocal}
-              </div>
+              {hotel ? (
+                <>
+                  <div className="mt-1 text-sm font-bold" style={{ color: C.navy }}>{hotel.name}</div>
+                  <div className="mt-1 rounded-lg p-3 text-base font-semibold leading-snug" style={{ backgroundColor: C.paper, color: C.ink }}>
+                    {hotel.addressLocal || hotel.address}
+                  </div>
+                </>
+              ) : (
+                <div className="mt-1 rounded-lg border border-dashed p-3" style={{ borderColor: C.rule }}>
+                  <NotSet>Your hotel appears here once accommodation partners for {trip.city} are added and your stay is booked.</NotSet>
+                </div>
+              )}
             </div>
 
             {/* Driver + fixed fare */}
@@ -82,19 +95,27 @@ export default function WalletScreen({ user }) {
                 <div className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest" style={{ color: C.confident }}>
                   <Car size={12} /> Driver
                 </div>
-                <div className="mt-1 text-sm font-bold" style={{ color: C.navy }}>{w?.driver?.name}</div>
-                <a href={`tel:${w?.driver?.phone?.replace(/\s/g, "")}`} className="text-sm font-black" style={{ color: C.confident }}>
-                  {w?.driver?.phone}
-                </a>
+                {w.driver?.phone ? (
+                  <>
+                    <div className="mt-1 text-sm font-bold" style={{ color: C.navy }}>{w.driver.name}</div>
+                    <a href={`tel:${w.driver.phone.replace(/\s/g, "")}`} className="text-sm font-black" style={{ color: C.confident }}>
+                      {w.driver.phone}
+                    </a>
+                  </>
+                ) : <div className="mt-1"><NotSet /></div>}
               </div>
               <div className="rounded-lg p-3" style={{ border: `1px solid ${C.rule}` }}>
                 <div className="text-[11px] font-black uppercase tracking-widest" style={{ color: C.confident }}>Fixed fare</div>
-                <div className="mt-1 text-sm font-semibold leading-snug" style={{ color: C.ink }}>{w?.fixedFare}</div>
-                <div className="mt-0.5 text-[10px]" style={{ color: C.muted }}>Never metered. Billed to the entity.</div>
+                {w.fixedFare ? (
+                  <>
+                    <div className="mt-1 text-sm font-semibold leading-snug" style={{ color: C.ink }}>{w.fixedFare}</div>
+                    <div className="mt-0.5 text-[10px]" style={{ color: C.muted }}>Never metered. Billed to the entity.</div>
+                  </>
+                ) : <div className="mt-1"><NotSet /></div>}
               </div>
             </div>
 
-            {/* Emergency row */}
+            {/* Emergency row — real numbers, always present */}
             <div className="flex items-stretch gap-3">
               <div className="flex flex-1 items-center gap-3 rounded-lg p-3" style={{ backgroundColor: "#FDECE9", border: "1px solid #FBC9C1" }}>
                 <Siren size={18} style={{ color: "#A81000" }} />
@@ -117,17 +138,19 @@ export default function WalletScreen({ user }) {
               <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest" style={{ color: C.confident }}>
                 <ShieldCheck size={12} /> Insurance
               </div>
-              <div className="mt-1 text-sm font-semibold" style={{ color: C.ink }}>{w?.insurance}</div>
+              {w.insurance
+                ? <div className="mt-1 text-sm font-semibold" style={{ color: C.ink }}>{w.insurance}</div>
+                : <div className="mt-1"><NotSet>Group policy number and assistance line — added by the concierge team.</NotSet></div>}
             </div>
 
-            {w?.embassyNote && (
+            {w.embassyNote && (
               <div className="rounded-lg p-3 text-xs leading-relaxed" style={{ backgroundColor: C.paper, color: C.muted }}>
                 {w.embassyNote}
               </div>
             )}
 
             <div className="border-t pt-3 text-center text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ borderColor: C.rule, color: C.muted }}>
-              Constructor · Concierge line {`+49 421 200 0000`}
+              Constructor · Travel &amp; Concierge
             </div>
           </div>
         </div>

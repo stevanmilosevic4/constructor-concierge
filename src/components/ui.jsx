@@ -167,3 +167,21 @@ export function Banner({ tone = "info", icon: Icon, title, children }) {
     </div>
   )
 }
+
+/* A designated, deliberately empty partner slot. Honest by design: the
+   concierge team fills these with real, signed partners in the admin
+   panel — nothing invented ships in the meantime. */
+export function DesignatedArea({ icon: Icon, title, body }) {
+  return (
+    <div className="flex flex-col items-start gap-1.5 rounded-xl2 border-2 border-dashed px-4 py-5"
+      style={{ borderColor: C.rule, backgroundColor: "rgba(255,255,255,0.6)" }}>
+      <div className="flex items-center gap-2">
+        {Icon && <Icon size={15} style={{ color: C.muted }} />}
+        <span className="text-sm font-bold" style={{ color: C.muted }}>{title}</span>
+      </div>
+      <p className="text-xs leading-relaxed" style={{ color: C.muted }}>
+        {body || "The concierge team is arranging partners for this — real names, rates and contacts appear here the moment they're signed."}
+      </p>
+    </div>
+  )
+}

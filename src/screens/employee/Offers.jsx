@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Tag } from "lucide-react"
 import { C } from "../../brand.js"
 import { useStore } from "../../lib/store.js"
-import { Card, Pill, SectionTitle, QR } from "../../components/ui.jsx"
+import { Card, Pill, SectionTitle, QR, DesignatedArea } from "../../components/ui.jsx"
 
 export default function Offers({ user }) {
   const s = useStore()
@@ -40,6 +40,11 @@ export default function Offers({ user }) {
         ))}
       </div>
 
+      {offers.length === 0 && (
+        <DesignatedArea icon={Tag} title={`Partner offers in ${city}`}
+          body="The concierge team is negotiating discounts and partnerships for this city — hotels, transfers, restaurants, gyms, spas. Each signed offer appears here with its code and a scannable QR, for every traveller at once." />
+      )}
+
       <div className="grid gap-3 sm:grid-cols-2">
         {shown.map((o) => (
           <Card key={o.code}>
@@ -62,10 +67,12 @@ export default function Offers({ user }) {
         ))}
       </div>
 
-      <p className="text-xs leading-relaxed" style={{ color: C.muted }}>
-        Personal-use spillover: many partner discounts extend to employees and their families off-duty — the same
-        code applies unless the offer says otherwise. Codes are sample data pending the signed vendor network.
-      </p>
+      {offers.length > 0 && (
+        <p className="text-xs leading-relaxed" style={{ color: C.muted }}>
+          Personal-use spillover: many partner discounts extend to employees and their families off-duty — the same
+          code applies unless the offer says otherwise.
+        </p>
+      )}
     </div>
   )
 }

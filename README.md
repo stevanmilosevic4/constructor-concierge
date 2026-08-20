@@ -21,13 +21,24 @@ to a partner — with the request email already written. No branch anywhere retu
 | `src/data/cities.js` | City-pack structure from the strategy note (§1–2); **content is sample data** |
 | `src/brand.js`, `tailwind.config.js` | Brand Identity Style Guide — *alternative web colors* (WCAG-required on web) + ALS Hauss type ramp |
 
-## Roles (demo sign-in on the start screen)
+## Sign-in — two doors, no role choice at the door
 
-- **Employee / VP** — request guidance, city packs, offers + QR codes, expenses with receipt capture and the 30/90-day clocks, offline travel wallet, per-diem & visa tools, who's-in-town (opt-in)
-- **Executive (C-level)** — same, plus the executive tier: EA delegation, guest links, fast-track/protocol notes
+- **Work email** — anyone on an allowed domain signs in as a Standard traveller. Tier
+  (Standard/Executive), entity, and EA delegation resolve from the **People registry** the
+  concierge team maintains in the admin panel — never from a choice at the login screen.
+  Unknown addresses on an allowed domain are auto-registered and appear in the registry.
+- **Concierge team access code** — opens the admin panel. Only the code's SHA-256 hash
+  ships in the bundle; on a static site this is an access gate, not security — SSO
+  (Microsoft Entra ID) replaces it in the backend phase, and the registry maps onto
+  directory groups.
+- **Guests never sign in** — each gets a no-login page: driver + plate, hotel, programme,
+  one number (`#/guest/<id>`).
+
+## Roles
+
+- **Traveller (Standard or Executive tier)** — request guidance, city packs, offers + QR codes, expenses with receipt capture and the 30/90-day clocks, offline travel wallet, per-diem & visa tools, who's-in-town (opt-in); executives also get EA delegation, guest links, fast-track/protocol notes
 - **Executive assistant** — edits the principal's agenda and briefs; creates guest links
-- **Concierge team (admin)** — cities & partners editor (add a discount → every traveller sees it immediately), request log (visibility, not a queue), guest links, group trips with WhatsApp-brief export, pack-update broadcasts (reach everyone travelling there in the next 30 days)
-- **Guest** — a no-login page per external guest: driver + plate, hotel, programme, one number (`#/guest/<id>`)
+- **Concierge team (admin)** — People & access registry, cities & partners editor (add a discount → every traveller sees it immediately), request log (visibility, not a queue), guest links, group trips with WhatsApp-brief export, pack-update broadcasts (reach everyone travelling there in the next 30 days)
 
 ## Fonts
 

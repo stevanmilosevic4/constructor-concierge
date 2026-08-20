@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Users, Plus, Trash2, Globe, Check, X, Pencil } from "lucide-react"
 import { C } from "../../brand.js"
 import { useStore, update, uid } from "../../lib/store.js"
-import { LEVELS, isVip } from "../../lib/policy.js"
+import { LEVELS, isVip, ENTITIES } from "../../lib/policy.js"
 import { normalizeEmail, entityFromEmail, nameFromEmail } from "../../lib/auth.js"
 import { Card, SectionTitle, Btn, Label, inputCls, inputStyle, Pill, Banner } from "../../components/ui.jsx"
 
@@ -39,10 +39,15 @@ function PersonForm({ initial, people, onSave, onCancel }) {
         <div>
           <Label>Level — sets the travel tier</Label>
           <select className={inputCls} style={inputStyle} value={p.level} onChange={set("level")}>
-            {Object.keys(LEVELS).map((l) => <option key={l}>{l}{isVip(l) ? " · Executive tier" : ""}</option>)}
+            {Object.keys(LEVELS).map((l) => <option key={l} value={l}>{l}{isVip(l) ? " · Executive tier" : ""}</option>)}
           </select>
         </div>
-        <div><Label>Entity</Label><input className={inputCls} style={inputStyle} value={p.entity} onChange={set("entity")} placeholder="Derived from email if empty" /></div>
+        <div>
+          <Label>Entity</Label>
+          <select className={inputCls} style={inputStyle} value={p.entity || entityFromEmail(p.email)} onChange={set("entity")}>
+            {Object.keys(ENTITIES).map((e) => <option key={e} value={e}>{e}</option>)}
+          </select>
+        </div>
         <div><Label>Line manager email</Label><input className={inputCls} style={inputStyle} value={p.managerEmail || ""} onChange={set("managerEmail")} /></div>
         {p.role === "ea" && (
           <div className="sm:col-span-2">
@@ -67,8 +72,17 @@ export default function People({ user }) {
   const [editing, setEditing] = useState(null) // "new" | person id
   const [domains, setDomains] = useState(s.allowedDomains.join(", "))
   const [domainsSaved, setDomainsSaved] = useState(false)
+  const [guard, setGuard] = useState("")
+
+  const adminCount = s.people.filter((x) => x.role === "admin").length
+  const isLastAdmin = (id) => adminCount <= 1 && s.people.find((x) => x.id === id)?.role === "admin"
 
   const save = (p, id) => {
+    if (id && isLastAdmin(id) && p.role !== "admin") {
+      setGuard("That is the last concierge team account — give someone else the admin role first.")
+      return
+    }
+    setGuard("")
     update((st) => ({
       people: id
         ? st.people.map((x) => (x.id === id ? { ...x, ...p } : x))
@@ -78,6 +92,11 @@ export default function People({ user }) {
   }
   const remove = (id) => {
     if (id === user.id) return // don't delete yourself
+    if (isLastAdmin(id)) {
+      setGuard("That is the last concierge team account — it cannot be removed.")
+      return
+    }
+    setGuard("")
     update((st) => ({ people: st.people.filter((x) => x.id !== id) }))
   }
   const saveDomains = () => {
@@ -97,6 +116,10 @@ export default function People({ user }) {
       </div>
 
       {editing === "new" && <PersonForm initial={blank()} people={s.people} onSave={(p) => save(p)} onCancel={() => setEditing(null)} />}
+
+      {guard && (
+        <p className="rounded-lg px-3 py-2 text-xs font-semibold" style={{ backgroundColor: "#FDECE9", color: "#A81000" }}>{guard}</p>
+      )}
 
       <Card>
         <div className="overflow-x-auto">
