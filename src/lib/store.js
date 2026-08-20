@@ -11,19 +11,25 @@ import { SEED_CITIES } from "../data/cities.js"
 
 const KEY = "constructor-concierge-v1"
 
-/* Demo accounts — the login screen offers these. Separation of roles:
-   admin (concierge team) · employee · vip (C-level) · ea (assistant). */
-export const DEMO_USERS = [
-  { id: "u-ana",    name: "Ana Petrović",    role: "employee", level: "Employee",          entity: "Constructor University", email: "ana@constructor.university", managerEmail: "manager@constructor.university" },
-  { id: "u-viktor", name: "Viktor Hahn",     role: "employee", level: "VP / Director",     entity: "Constructor Knowledge",  email: "viktor@constructor.org",     managerEmail: "manager@constructor.org" },
-  { id: "u-serg",   name: "S. Bell",         role: "vip",      level: "C-level",           entity: "Constructor Group",      email: "sb@constructor.org",         managerEmail: "" },
-  { id: "u-lena",   name: "Lena Krug",       role: "ea",       level: "Employee",          entity: "Constructor Group",      email: "lena@constructor.org",       assistsUserId: "u-serg" },
-  { id: "u-bojana", name: "Concierge team",  role: "admin",    level: "Employee",          entity: "Constructor Knowledge",  email: "concierge@constructor.org" },
+/* The People registry — seeded with the pilot group; the concierge team
+   maintains it in the admin panel (People tab). role: employee | ea | admin.
+   Tier (Standard vs Executive) is derived from level via isVip(). */
+export const SEED_PEOPLE = [
+  { id: "u-ana",    email: "ana.petrovic@constructor.university", name: "Ana Petrović",   role: "employee", level: "Employee",          entity: "Constructor University", managerEmail: "manager@constructor.university" },
+  { id: "u-viktor", email: "viktor.hahn@constructor.org",         name: "Viktor Hahn",    role: "employee", level: "VP / Director",     entity: "Constructor Knowledge",  managerEmail: "manager@constructor.org" },
+  { id: "u-serg",   email: "sb@constructor.org",                  name: "S. Bell",        role: "employee", level: "C-level",           entity: "Constructor Group",      managerEmail: "" },
+  { id: "u-lena",   email: "lena.krug@constructor.org",           name: "Lena Krug",      role: "ea",       level: "Employee",          entity: "Constructor Group",      assistsEmail: "sb@constructor.org" },
+  { id: "u-conc",   email: "concierge@constructor.org",           name: "Concierge team", role: "admin",    level: "Employee",          entity: "Constructor Knowledge" },
 ]
+
+/* Work-email domains allowed to sign in. Editable in the People tab. */
+export const SEED_DOMAINS = ["constructor.university", "constructor.org", "constructor.academy", "weareconstructor.com"]
 
 function seed() {
   return {
     session: null, // { userId }
+    people: structuredClone(SEED_PEOPLE),
+    allowedDomains: [...SEED_DOMAINS],
     cities: structuredClone(SEED_CITIES),
 
     /* Requests the guidance engine has produced — the admin sees these
@@ -108,7 +114,7 @@ function load() {
       const parsed = JSON.parse(raw)
       const s = seed()
       // Shallow merge so new seed keys appear after an app update.
-      return { ...s, ...parsed, cities: parsed.cities || s.cities }
+      return { ...s, ...parsed, cities: parsed.cities || s.cities, people: parsed.people || s.people, allowedDomains: parsed.allowedDomains || s.allowedDomains }
     }
   } catch { /* corrupted or unavailable — reseed */ }
   return seed()
@@ -141,7 +147,10 @@ export function useStore() {
 
 /* Convenience selectors ------------------------------------------- */
 
-export const currentUser = (s) => DEMO_USERS.find((u) => u.id === s.session?.userId) || null
+export const currentUser = (s) => (s.people || []).find((u) => u.id === s.session?.userId) || null
+
+export const personByEmail = (s, email) =>
+  (s.people || []).find((p) => p.email.toLowerCase() === (email || "").trim().toLowerCase()) || null
 
 export const uid = () => Math.random().toString(36).slice(2, 9)
 
@@ -154,7 +163,7 @@ export function colleaguesInTown(s, user) {
       if (o.userId === user.id || o.city !== t.city) continue
       if (!s.presenceOptIn[o.userId]) continue
       if (o.start <= t.end && t.start <= o.end) {
-        const who = DEMO_USERS.find((u) => u.id === o.userId)
+        const who = (s.people || []).find((u) => u.id === o.userId)
         if (who) out.push({ trip: o, who, overlapCity: t.city })
       }
     }

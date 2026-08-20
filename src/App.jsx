@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"
 import {
   Plane, MapPin, Receipt, CalendarDays, Tag, Wallet, Wrench, LayoutDashboard,
-  Inbox, Building2, Link2, Users, Megaphone, LogOut, LifeBuoy, Phone, X,
+  Inbox, Building2, Link2, Users, UserCog, Megaphone, LogOut, LifeBuoy, Phone, X,
 } from "lucide-react"
 import { C } from "./brand.js"
-import { useStore, update, currentUser, DEMO_USERS } from "./lib/store.js"
-import { CONTACTS } from "./lib/policy.js"
+import { useStore, update, currentUser } from "./lib/store.js"
+import { CONTACTS, isVip } from "./lib/policy.js"
 import { Wordmark, Btn, Pill } from "./components/ui.jsx"
 
 import Login from "./screens/Login.jsx"
@@ -23,6 +23,7 @@ import CityEditor from "./screens/admin/CityEditor.jsx"
 import GuestLinks from "./screens/admin/GuestLinks.jsx"
 import Groups from "./screens/admin/Groups.jsx"
 import Broadcasts from "./screens/admin/Broadcasts.jsx"
+import People from "./screens/admin/People.jsx"
 import GuestPage from "./screens/guest/GuestPage.jsx"
 
 /* ------------------------------------------------------------------ */
@@ -84,6 +85,7 @@ function Shell({ user }) {
         ["guests", "Guest links", Link2, GuestLinks],
         ["groups", "Group trips", Users, Groups],
         ["broadcast", "Pack updates", Megaphone, Broadcasts],
+        ["people", "People & access", UserCog, People],
       ]
     : ea
       ? [
@@ -112,10 +114,10 @@ function Shell({ user }) {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4">
           <Wordmark dark sub={admin ? "Concierge · Admin" : ea ? "Concierge · Assistant" : "Travel & Concierge"} />
           <div className="flex items-center gap-3">
-            {user.role === "vip" && <Pill tone="vip">Executive</Pill>}
+            {isVip(user.level) && <Pill tone="vip">Executive</Pill>}
             <div className="text-right leading-tight">
               <div className="text-sm font-bold text-white">{user.name}</div>
-              <div className="text-[11px]" style={{ color: "#7FD4FF" }}>{user.level} · {user.entity}</div>
+              <div className="text-[11px]" style={{ color: "#7FD4FF" }}>{user.role === "admin" ? user.email : `${user.level} · ${user.entity}`}</div>
             </div>
             <button
               onClick={() => update(() => ({ session: null }))}

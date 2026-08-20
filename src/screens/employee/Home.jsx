@@ -4,7 +4,7 @@ import {
   Wallet, Sparkles, Link2, UserCog,
 } from "lucide-react"
 import { C } from "../../brand.js"
-import { useStore, colleaguesInTown, upcomingBroadcasts, DEMO_USERS } from "../../lib/store.js"
+import { useStore, colleaguesInTown, upcomingBroadcasts } from "../../lib/store.js"
 import { fmtDate, isVip } from "../../lib/policy.js"
 import { Card, Pill, SectionTitle, Btn, KV, Banner, Empty } from "../../components/ui.jsx"
 
@@ -19,7 +19,7 @@ export default function Home({ user, goTab }) {
   const nearby = colleaguesInTown(s, user)
   const updates = upcomingBroadcasts(s, user)
   const myMeetings = s.meetings.filter((m) => m.userId === user.id).slice(0, 2)
-  const ea = DEMO_USERS.find((u) => u.assistsUserId === user.id)
+  const ea = s.people.find((u) => u.role === "ea" && u.assistsEmail === user.email)
 
   return (
     <div className="space-y-6">

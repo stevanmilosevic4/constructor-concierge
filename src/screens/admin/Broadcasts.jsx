@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Megaphone, Send } from "lucide-react"
 import { C } from "../../brand.js"
-import { useStore, update, uid, DEMO_USERS } from "../../lib/store.js"
+import { useStore, update, uid } from "../../lib/store.js"
 import { fmtDate } from "../../lib/policy.js"
 import { Card, SectionTitle, Btn, Label, inputCls, inputStyle, Pill, Banner } from "../../components/ui.jsx"
 
@@ -19,7 +19,7 @@ export default function Broadcasts() {
   const today = new Date().toISOString().slice(0, 10)
   const willHear = s.trips
     .filter((t) => t.city === city && t.end >= today && t.start <= horizon.toISOString().slice(0, 10))
-    .map((t) => DEMO_USERS.find((u) => u.id === t.userId))
+    .map((t) => s.people.find((u) => u.id === t.userId))
     .filter(Boolean)
 
   const send = () => {

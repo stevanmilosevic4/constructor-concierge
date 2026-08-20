@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { CalendarDays, Plus, Trash2, Pencil, FileText, X, Check } from "lucide-react"
 import { C } from "../../brand.js"
-import { useStore, update, uid, DEMO_USERS } from "../../lib/store.js"
+import { useStore, update, uid } from "../../lib/store.js"
 import { fmtDate } from "../../lib/policy.js"
 import { Card, SectionTitle, Btn, Label, inputCls, inputStyle, Empty, Pill } from "../../components/ui.jsx"
 
@@ -36,8 +36,8 @@ function MeetingForm({ initial, onSave, onCancel }) {
 export default function Agenda({ user }) {
   const s = useStore()
   const isEa = user.role === "ea"
-  const principal = isEa ? DEMO_USERS.find((u) => u.id === user.assistsUserId) : user
-  const canEdit = isEa || user.role === "vip" || user.role === "employee"
+  const principal = (isEa && s.people.find((u) => u.email === user.assistsEmail)) || user
+  const canEdit = isEa || user.role === "employee"
   const [editing, setEditing] = useState(null) // "new" | meeting id
   const meetings = s.meetings
     .filter((m) => m.userId === principal.id)
