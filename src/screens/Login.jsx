@@ -22,7 +22,7 @@ export default function Login() {
         </h1>
         <p className="mt-3 max-w-xl text-base leading-relaxed" style={{ color: "#9FB6D4" }}>
           The concierge team curates and routes. It never approves and never books — so this app tells you
-          exactly what to request, from whom, and what to attach. concierge.weareconstructor.org
+          exactly what to request, from whom, and what to attach. concierge.weareconstructor.com
         </p>
 
         <div className="mt-10 grid gap-3 sm:grid-cols-2">

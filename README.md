@@ -1,6 +1,6 @@
 # Constructor · Travel & Concierge
 
-Prototype for **concierge.weareconstructor.org** — the concierge team's app for
+Prototype for **concierge.weareconstructor.com** — the concierge team's app for
 Constructor Group travel. React + Vite + Tailwind, no backend yet (state persists
 in localStorage).
 
