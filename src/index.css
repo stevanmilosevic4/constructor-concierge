@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ALS Hauss is the corporate typeface (Bold for headings, Light/Regular for body).
+   Drop the licensed .woff2 files into /public/fonts and these @font-face rules pick
+   them up; until then the stack falls back to Arial, exactly as the video styleguide
+   prescribes for systems without the font installed. */
+@font-face {
+  font-family: "ALS Hauss";
+  src: url("/fonts/ALSHauss-Regular.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "ALS Hauss";
+  src: url("/fonts/ALSHauss-Medium.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "ALS Hauss";
+  src: url("/fonts/ALSHauss-Bold.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "ALS Hauss";
+  src: url("/fonts/ALSHauss-Black.woff2") format("woff2");
+  font-weight: 900; font-style: normal; font-display: swap;
+}
+
+:root { color-scheme: light; }
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: #F9F9F9;
+  color: #141414;
+  -webkit-font-smoothing: antialiased;
+  font-family: "ALS Hauss", Arial, Helvetica, sans-serif;
+}
+
+/* Focus ring — keyboard users only, brand blue. */
+:focus-visible { outline: 2px solid #00B2FF; outline-offset: 2px; border-radius: 4px; }
+
+/* Utility: hide scrollbar on horizontal tab rails without losing scrollability. */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+}
