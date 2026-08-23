@@ -45,11 +45,18 @@ All writes go through `update()`; `useStore()` subscribes. Shapes:
 - **cities** — map keyed by name (Bremen, Istanbul, Belgrade, "São Paulo",
   Schaffhausen). Facts: `tag, country, currency, currencyName, emergency,
   police, tz, lat, lon, wikiTitle, language, plugs, water, owner, updatedAt,
-  intro, transport[[label,url]], history[], funFacts[]`. Empty partner areas:
-  `transfers[[route,price,note]]`, `hotels{ name, area, address, addressLocal,
+  intro, transport[[label,url]], history[], funFacts[]`. Attached from code
+  (always win over saved copies): `countryProfile{ geography[], history[],
+  culture[] }` (data/countries.js), `places[[name,note]]`, `practical{}` and
+  `relocation{}` — researched `{ text, src }[]` per key (data/facts.js,
+  203 items, 23 Aug 2026). Partner areas, all empty until signed, keys from
+  `PARTNER_SECTIONS` in data/packSections.js: `transfers` (3-tuple),
+  `eat, health, wellbeing, coworking, carRental, visaHandler, dutyOfCare,
+  servicedApartments, family, relocationAgents, taxAdvisors, offsite,
+  suppliers` ([label,note]), `hotels{ name, area, address, addressLocal,
   note, near[[label,cat,minutes,note]] }`, `offers{ name, cat, offer, how,
-  code }` (QR rendered from code), `eat/health/family/wellbeing[[label,note]]`,
-  `wallet{ hotelLocal, driver, fixedFare, insurance, embassyNote }`
+  code }` (QR from code), `wallet{ hotelLocal, driver, fixedFare, insurance,
+  embassyNote }`. Each partner section carries `audience: visit|relocate|both`.
 - **requests** — `{ id, userId, userName, type, label, dest, created,
   status: "routed", gates[], routedTo }` · a log, not a work queue
 - **trips** — `{ id, userId, city, start, end, hotelIdx, purpose, family }`
@@ -65,21 +72,28 @@ All writes go through `update()`; `useStore()` subscribes. Shapes:
 
 ## Routes / pages
 
-Hash-routed; `#/guest/:id` bypasses login entirely (`src/App.jsx`).
+Hash-routed; `#/guest/:id` bypasses login entirely; `#/pack/:city/:mode`
+(mode = visit|relocate, signed-in only) renders the printable A4 pack and
+triggers the browser's Save-as-PDF (`src/screens/PackPrint.jsx`;
+append `?noprint` to suppress the dialog). Sources are footnoted.
 
 **Traveller** — Home "My trip" (next trip, weather, hotel + nearby, who's in
 town, pack updates, exec card) · Request (13 guided types: flight, hotel,
 transfer, rentalcar, businessclass, extended, visa, expense, citypack,
 vipguest, relocation, offsite, other → gates → who-decides answer +
-`mailto:` compose) · City packs · Offers (QR codes, `src/lib/qr.js`, no lib) ·
+`mailto:` compose) · City packs (Visiting/Relocating toggle; sub-pages
+Pack / Practical / Country & culture / Places to visit; Download PDF) ·
+Offers (QR codes, `src/lib/qr.js`, no lib) ·
 Agenda · Expenses (receipt capture, 30/90-day clocks) · Wallet (offline,
 printable, local-script hotel address) · Tools (per-diem statutory sources,
 passport/visa check vs `VISA_MATRIX`, presence opt-in)
 
 **EA** — Principal's agenda (briefs) · City packs · Offers · Guest links
 
-**Admin** — Dashboard · Requests log · Cities & partners editor (structured
-records → packs regenerate; "only real partners" rule) · Guest links ·
+**Admin** — Dashboard · Requests log · Cities & partners editor (registry-
+driven: one TupleEditor per partner section, tagged Visiting/Relocating/Both;
+"only real partners" rule; researched facts are code-maintained, not editable
+here) · Guest links ·
 Group trips · Pack updates (broadcasts) · People & access (roles, tiers,
 EA links, domains; last-admin lockout guard)
 
@@ -112,5 +126,13 @@ HTTPS enforced; policy engine with entity-specific approver emails.
 - Receipts as dataURLs will hit the ~5 MB localStorage ceiling.
 - `VISA_MATRIX` covers a starter passport×destination set; per-diem tool links
   statutory sources rather than quoting rates (policy-compliant, by intent).
+- Researched facts carry a research date (23 Aug 2026) and some items are
+  explicitly marked "unverified" (e.g. English-speaking ER staff in Bremen and
+  Schaffhausen); they need a quarterly re-check. Prices (SIM packs, fares,
+  Istanbul IMEI fee) change yearly.
+- Facts are not editable in the admin panel — corrections are code edits in
+  data/facts.js (one line, one source). An admin "suggest a correction" flow
+  would be the natural next step.
+- PDF = browser print; headless generation/emailing of packs needs a backend.
 - ALS Hauss woff2 files pending licence; drop into `public/fonts/`.
 - Old `-v1` localStorage keys are orphaned (harmless).
