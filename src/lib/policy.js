@@ -28,12 +28,14 @@ export const CONTACTS = {
   concierge:{ name: "Concierge team",             email: "concierge@constructor.org",for: "City packs, partner rates, guidance", phone: "+49 421 200 0000" },
 }
 
-/* Final approval differs by entity — process map step 5. */
+/* Final approval — process map step 5. One approval desk for every
+   entity: oz@constructor.org with bojana@constructor.org in copy. */
 export const ENTITIES = {
   "Constructor University": {
     short: "CU",
-    approver: "tt@constructor.university",
-    approverLabel: "tt@constructor.university, or your direct manager",
+    approver: "oz@constructor.org",
+    approverLabel: "oz@constructor.org / bojana@constructor.org",
+    cc: ["bojana@constructor.org"],
   },
   "Constructor Knowledge": {
     short: "CK",
