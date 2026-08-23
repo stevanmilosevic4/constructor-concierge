@@ -16,6 +16,10 @@
    ===================================================================== */
 
 const F = (text, src) => ({ text, src })
+/* L = a fact whose FIGURE changes (price, fare, fee, threshold). The text
+   stays stable and the link is rendered prominently as the live source —
+   nothing in the pack needs editing when the number moves. */
+const L = (text, src, live) => ({ text, src, live })
 
 export const CITY_FACTS = {
   /* ------------------------------------------------------------------ */
@@ -23,10 +27,10 @@ export const CITY_FACTS = {
     practical: {
       sim: [
         F("Germany requires ID verification before any prepaid SIM is activated (§172 TKG): show a passport or ID card in a shop, or use video identification.", "https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/OeffentlicheSicherheit/IdentverfahrenPrepaid/start.html"),
-        F("Telekom MagentaMobil Prepaid (2026): S 1 GB €4.95 · M 20 GB €9.95 · L 40 GB €14.95 · XL 80 GB €19.95 per 28 days.", "https://www.telekom.com/de/medien/medieninformationen/detail/neue-prepaid-tarife-der-telekom-1102042"),
-        F("Vodafone CallYa prepaid: Start €4.99 per 4 weeks (2 GB); Allnet Flat S 25 GB €9.99; M 50 GB €14.99; L 100 GB €19.99 — 5G and EU roaming included. City-centre shops at Sögestraße 21 and Knochenhauerstraße 3 (closed Sundays).", "https://shops.vodafone.de/bremen"),
-        F("Budget option: ALDI TALK starter set €9.99 including €10 credit, sold at any ALDI; activation needs an ID check (video-ident, partner shop or Post branch).", "https://www.alditalk.de/starter-set"),
-        F("International travel eSIMs work: Airalo sells Germany data-only eSIMs on the O2 network (unlimited from about $11 for 3 days). No local number.", "https://www.airalo.com/germany-esim"),
+        L("Telekom MagentaMobil Prepaid: four tiers by data volume, 28-day validity, unused data rolls over on the larger tiers.", "https://www.telekom.de/unterwegs/tarife-und-optionen/prepaid-tarife", "Current Telekom prepaid prices"),
+        L("Vodafone CallYa prepaid: 4-week tiers from a small starter to 100 GB, 5G and EU roaming included. City-centre shops at Sögestraße 21 and Knochenhauerstraße 3 (closed Sundays).", "https://www.vodafone.de/callya/", "Current CallYa prices"),
+        L("Budget option: ALDI TALK starter set with starting credit, sold at any ALDI; activation needs an ID check (video-ident, partner shop or Post branch).", "https://www.alditalk.de/starter-set", "Current ALDI TALK price"),
+        L("International travel eSIMs work: Airalo sells Germany data-only eSIMs on the O2 network. No local number.", "https://www.airalo.com/germany-esim", "Current eSIM plans"),
         F("Unverified: whether any shop at Bremen Airport sells SIM cards — assume you buy in the city centre or at ALDI.", "https://www.bremen-airport.com"),
       ],
       rideHailing: [
@@ -36,20 +40,20 @@ export const CITY_FACTS = {
       ],
       transportPayment: [
         F("Mobile tickets: the VBN 'FahrPlaner' app (also DB Navigator and FAIRTIQ). FAIRTIQ is check-in/check-out: swipe Start when boarding and Stop when leaving; it bills the best price and caps the day at the day-ticket.", "https://www.vbn.de/vbn/presse-news/presse/neue-zahlungsmoeglichkeit-mit-der-fairtiq-app-des-vbn"),
-        F("On BSAG buses you pay the driver by card, Apple Pay or Google Pay only — cash has not been accepted on buses since February 2021 (max €50, no PIN).", "https://www.vbn.de/feed/bargeldlos-unterwegs-in-den-bussen-der-bsag"),
+        F("On BSAG buses you pay the driver by card, Apple Pay or Google Pay only — cash has not been accepted on buses since February 2021.", "https://www.vbn.de/feed/bargeldlos-unterwegs-in-den-bussen-der-bsag"),
         F("Gotcha: on board you can only get single, day, night, connecting and short-trip tickets. Weekly and monthly passes must come from machines, customer centres, kiosks or the apps.", "https://www.bsag.de/befoerderungsbedingungen/fragen-und-antworten"),
-        F("Fares: single €3.40 (3 h) · short trip €1.80 · day ticket €9.50 (1–5 adults) · 7-day €28.60 · monthly €82.70 · Deutschlandticket €63/month, cancellable monthly.", "https://www.bsag.de/tickets/tickets-ueberblick"),
+        L("Ticket types: single (3 h), short trip, day ticket (1–5 adults), 7-day, monthly, and the Deutschlandticket (nationwide local transport, cancellable monthly).", "https://www.bsag.de/tickets/tickets-ueberblick", "Current BSAG fares"),
         F("BSAG customer centres: Domsheide (Balgebrückstraße 11) and Hauptbahnhof (Breitenweg 3a, from 07:00); over 100 kiosks and supermarkets also sell tickets. Customer service 0421 5596-666.", "https://www.bsag.de/service/rund-um-die-fahrt"),
       ],
       pharmacies: [
-        F("On-duty (Notdienst) pharmacies: look up today's list on aponet.de, or dial 22 8 33 from a mobile (€0.69/min) / 0800 00 22 8 33 free from a German landline — the voice system names the nearest open pharmacy.", "https://www.apothekerkammer-bremen.de/Service-Notdienste.html"),
+        F("On-duty (Notdienst) pharmacies: look up today's list on aponet.de, or dial 22 8 33 from a mobile (charged) / 0800 00 22 8 33 free from a German landline — the voice system names the nearest open pharmacy.", "https://www.apothekerkammer-bremen.de/Service-Notdienste.html"),
         F("Bremen duty pharmacies run 24 hours, from 09:00 on the duty day to 09:00 the next morning.", "https://www.apothekerkammer-bremen.de/Service-Notdienste.html"),
         F("Official lookup page for Bremen on aponet.de.", "https://www.aponet.de/apotheke/notdienstsuche/Bremen/%20/5"),
       ],
       printShops: [
         F("CopyHouse Universität, Bibliothekstraße 7 (Glashalle), 28359 Bremen — tel. 0421 17 84 72 72, Mon–Thu 09:00–15:00, Fri 09:00–14:00. Print, copy, binding on campus.", "https://my-copy.de/kontakt/"),
         F("MILDE MEDIA copyshop, Friedrich-Karl-Straße 107, 28211 Bremen — tel. +49 421 499 27 11, Mon–Fri 10–13 and 15–18.", "https://milde-copyshop.de/"),
-        F("University library (SuUB): print via the Kuario app or a copy card from the desk; A4 black-and-white €0.05, colour €0.09; scanning free.", "https://www.suub.uni-bremen.de/home-english/info-en/copy-scan-print/"),
+        L("University library (SuUB): print via the Kuario app or a copy card from the desk; scanning is free.", "https://www.suub.uni-bremen.de/home-english/info-en/copy-scan-print/", "Current print prices"),
       ],
       taxi: [
         F("Taxi-Ruf Bremen: +49 421 14 0 14 — 24 hours, 365 days. WhatsApp +49 170 339 8423. Also bookable online or via the Taxi Deutschland app.", "https://www.taxi-ruf-bremen.de/en/contact/"),
@@ -72,13 +76,13 @@ export const CITY_FACTS = {
       ],
       residencePermit: [
         F("Migrationsamt Bremen, Stresemannstraße 48 — tel. 0421 361-88630 (Mon–Thu 8–12), office@migrationsamt.bremen.de. Strictly appointment-only; walk-ins are not served.", "https://www.service.bremen.de/die-senatorin-fuer-inneres-und-sport/migrationsamt-100086"),
-        F("After entering on a D visa, apply within its validity (or within 90 days for visa-free nationals) by emailing the 'Terminvergabe Einreise' form to ref11@migrationsamt.bremen.de. Fee up to €110.", "https://www.service.bremen.de/dienstleistungen/aufenthaltserlaubnis-nach-einreise-mit-visum-beantragen-122692"),
+        L("After entering on a D visa, apply within its validity (or within 90 days for visa-free nationals) by emailing the 'Terminvergabe Einreise' form to ref11@migrationsamt.bremen.de.", "https://www.service.bremen.de/dienstleistungen/aufenthaltserlaubnis-nach-einreise-mit-visum-beantragen-122692", "Current permit fee"),
         F("Documents for an employment permit: form, passport, biometric photo (under 3 months), proof of health insurance, employment contract.", "https://www.service.bremen.de/dienstleistungen/aufenthaltserlaubnis-zur-beschaeftigung-und-selbstaendigkeit-122931"),
-        F("EU Blue Card 2026: minimum gross salary €50,700, or €45,934.20 for shortage occupations and recent graduates; recognised degree and a contract of at least 6 months.", "https://www.arbeitsagentur.de/vor-ort/zav/working-and-living-in-germany/newsletter-iss/03-2026/blaue-karte"),
+        L("EU Blue Card: a minimum gross salary applies (lower for shortage occupations and recent graduates), set each year; recognised degree and a contract of at least 6 months.", "https://www.make-it-in-germany.com/en/visa-residence/types/eu-blue-card", "Current salary thresholds"),
       ],
       taxId: [
         F("The 11-digit Steuer-ID is posted automatically and free to your registered address about 6 weeks after Anmeldung; if nothing arrives within 3 months, request it via the BZSt online form.", "https://www.service.bremen.de/dienstleistungen/steueridentifikationsnummer-erhalten-186036"),
-        F("Health insurance is compulsory: employees earning above €603/month and below €77,400/year (2026) are in statutory insurance (GKV); above that you may choose private cover.", "https://www.bundesgesundheitsministerium.de/gesetzlich-versicherte"),
+        L("Health insurance is compulsory: employees below the annual income threshold are in statutory insurance (GKV); above it you may choose private cover. The threshold is reset each year.", "https://www.bundesgesundheitsministerium.de/gesetzlich-versicherte", "Current threshold"),
       ],
       banking: [
         F("Banks typically ask for passport or residence permit, the Meldebescheinigung (registration certificate) and a German address.", "https://handbookgermany.de/en/bank-account"),
@@ -87,11 +91,11 @@ export const CITY_FACTS = {
       ],
       mobile: [
         F("Postpaid contracts run at most 24 months; afterwards one month's notice, and providers must warn before auto-renewal (rules since December 2021).", "https://www.bundesnetzagentur.de/DE/Vportal/TK/NeueKundenrechte/start.html"),
-        F("No-contract alternative for residents: Vodafone CallYa prepaid with a free eSIM option (25 GB for €9.99 per 4 weeks).", "https://www.vodafone.de/featured/article/vodafone-callya-tarife-schneller-surfen-mit-5g-und-noch-mehr-datenvolumen-110057"),
+        L("No-contract alternative for residents: Vodafone CallYa prepaid with a free eSIM option.", "https://www.vodafone.de/callya/", "Current CallYa prices"),
       ],
       drivingLicence: [
         F("Non-EU licences are valid for 6 months after taking residence, then must be converted. Licences from 'Anlage 11' countries convert without a test; others need theory and practical exams.", "https://www.service.bremen.de/sixcms/detail.php?gsid=bremen128.c.9309.de&asl=bremen2014_sp.c.13091.de"),
-        F("Führerscheinstelle, Stresemannstraße 48 — tel. 0421 361-88669, appointment required; fee €37.50–65; 4–6 weeks. Bring the licence with an official translation, ID and a photo.", "https://www.service.bremen.de/dienstleistungen/auslaendischen-fuehrerschein-umschreiben-anlage-11-fev-123369"),
+        L("Führerscheinstelle, Stresemannstraße 48 — tel. 0421 361-88669, appointment required; processing 4–6 weeks. Bring the licence with an official translation, ID and a photo.", "https://www.service.bremen.de/dienstleistungen/auslaendischen-fuehrerschein-umschreiben-anlage-11-fev-123369", "Current fee"),
         F("Valid EU/EEA licences need no conversion in Germany.", "https://www.service.bremen.de/dienstleistungen/auslaendischen-fuehrerschein-umschreiben-eu-ewr-9588"),
       ],
       schools: [
@@ -107,21 +111,21 @@ export const CITY_FACTS = {
   Istanbul: {
     practical: {
       sim: [
-        F("Tourist packs (28 days, new prepaid line with a foreign passport): Turkcell Tourist Welcome Pack 20 GB + 200 min, recommended price 1,800 TL; Türk Telekom Welcome 25 GB 420 TL / 50 GB 550 TL plus SIM and activation in store; Vodafone Welcome to Turkey 20 GB + 750 min, price varies by shop.", "https://www.turkcell.com.tr/kampanyalar/mobil-hat-data-hatti-kampanyalari/yeni-turkcell-musterisi/tourist-welcome-pack"),
-        F("Airport reality (IST, May 2026): 20–25 GB packs cost roughly 1,900–3,200 TL at the airport counters; city-centre shops are usually cheaper. Passport registration is mandatory everywhere.", "https://www.traveltomtom.net/destinations/europe/turkey/turkey-sim-card-istanbul-airport"),
-        F("THE RULE TO KNOW: a phone brought from abroad works with a Turkish SIM for 120 days, then it is blocked unless you register the IMEI via e-Devlet — the 2026 fee is 54,258 TL (about US$1,263). The dual-SIM/eSIM loophole ended 1 May 2026. Short trips are unaffected; relocators should plan for it.", "https://www.turkiyetoday.com/nation/deadline-nears-new-regulation-ends-dual-sim-loophole-in-turkiye-3218016"),
-        F("International travel eSIMs work (Airalo on the Türk Telekom network, e.g. 7-day unlimited US$24.50) and, as roaming eSIMs, are treated differently from a local Turkish SIM under the 120-day rule.", "https://www.airalo.com/turkey-esim"),
+        L("Tourist packs (28 days, new prepaid line opened with a foreign passport) from Turkcell, Türk Telekom and Vodafone TR, each with data plus local minutes; the SIM and activation are charged on top in store.", "https://www.turkcell.com.tr/kampanyalar/mobil-hat-data-hatti-kampanyalari/yeni-turkcell-musterisi/tourist-welcome-pack", "Current Turkcell tourist pack"),
+        L("Airport counters at IST charge considerably more than city-centre shops for the same packs; passport registration is mandatory everywhere. Türk Telekom and Vodafone publish their tourist offers online.", "https://www.turktelekom.com.tr/en/prepaid-tourist-sim-turkey", "Current Türk Telekom tourist prices"),
+        L("THE RULE TO KNOW: a phone brought from abroad works with a Turkish SIM for 120 days, then it is blocked unless you register the IMEI via e-Devlet for a substantial fee that is revalued every January. The dual-SIM/eSIM loophole ended 1 May 2026. Short trips are unaffected; relocators should plan for it.", "https://www.turkiye.gov.tr/btk-imei-sorgulama", "Current IMEI registration fee (e-Devlet)"),
+        L("International travel eSIMs work (Airalo on the Türk Telekom network) and, as roaming eSIMs, are treated differently from a local Turkish SIM under the 120-day rule.", "https://www.airalo.com/turkey-esim", "Current eSIM plans"),
       ],
       rideHailing: [
         F("Uber works in Istanbul but only as a taxi-hailing app — it dispatches licensed yellow/turquoise taxis, not private cars, with in-app payment.", "https://www.uber.com/global/en/cities/istanbul/"),
         F("BiTaksi is the dominant local taxi app: licensed taxis, in-app card payment or cash, 8-seat and luxury options.", "https://apps.apple.com/tr/app/bitaksi-your-closest-taxi/id589500723"),
         F("İBB's list of licensed taxi-hailing platforms (July 2025): BiTaksi, Uber, Binbin, inDrive, Valo and Yandex Go. The city's own iTaksi app appears defunct as of August 2026 (parked domain, store listings removed) — use BiTaksi or Uber.", "https://www.ekonomim.com/ekonomi/ibb-yeni-taksi-uygulamasini-duyurdu-bitaksi-ve-uberin-ardindan-yandex-go-devreye-alindi-haberi-831220"),
-        F("All apps use the same İBB-regulated meter (from 20 July 2026): yellow taxi 71.94 TL opening, 47.92 TL/km, minimum 230 TL; turquoise 82.73 TL / 55.10 TL/km / min 265 TL; black 122.30 TL / 81.46 TL/km / min 400 TL.", "https://tuhim.ibb.gov.tr/media/27494/taksi-taşımacılığı-ücret-tarifesi.pdf"),
+        L("All apps use the same İBB-regulated meter: an opening fare, a per-km rate and a minimum fare, in three tiers (yellow, turquoise, black); the tariff is reset by İBB several times a year.", "https://tuhim.ibb.gov.tr/", "Current taxi tariff (İBB)"),
       ],
       transportPayment: [
-        F("İstanbulkart is sold and topped up at BELBİM ticket machines (Biletmatik) at metro, tram, Metrobüs and ferry stations and at both airports; valid on bus, metro, tram, cable car, Marmaray, Metrobüs and ferries. Blank card about 165 TL (non-refundable).", "https://visit.istanbul/istanbul-card"),
-        F("Fares from 20 July 2026: 46.20 TL per boarding with İstanbulkart or the app (discounted transfers 34.40 → 26.42 → 17.18 TL); Metrobüs 33.08–68.59 TL by distance; Marmaray 37.40–82.17 TL; Kadıköy–Eminönü ferry 65.21 TL; airport metro M11 37.40–73.19 TL.", "https://tuhim.ibb.gov.tr/media/27491/İstanbulkart.pdf"),
-        F("Contactless bank cards work at the readers on bus, metro, tram, Metrobüs and ferries — but are charged the single-ticket rate of 65 TL versus 46.20 TL with İstanbulkart.", "https://visit.istanbul/istanbul-card"),
+        L("İstanbulkart is sold and topped up at BELBİM ticket machines (Biletmatik) at metro, tram, Metrobüs and ferry stations and at both airports; valid on bus, metro, tram, cable car, Marmaray, Metrobüs and ferries. The blank card itself carries a non-refundable charge.", "https://www.istanbulkart.istanbul/", "Current card price & fares"),
+        L("One fare per boarding with İstanbulkart or the app, with discounted transfers; Metrobüs and Marmaray are priced by distance; ferries and the airport metro (M11) have their own tariff. İBB publishes the full table and revises it during the year.", "https://tuhim.ibb.gov.tr/", "Current İstanbulkart fares"),
+        L("Contactless bank cards work at the readers on bus, metro, tram, Metrobüs and ferries — but are charged the single-ticket rate, noticeably more than the İstanbulkart fare.", "https://visit.istanbul/istanbul-card", "Current single-ticket rate"),
         F("Marmaray (distance-based, run by TCDD) does NOT accept bank-card tap at the turnstiles — use a physical İstanbulkart or the İstanbulkart Mobil QR; the maximum fare is charged at entry and the difference refunded at exit.", "https://marmaray.istanbul/marmarayda-kredi-karti-geciyor-mu/"),
         F("İstanbulkart Mobil app (iOS/Android): pay by QR on buses, metro, Metrobüs, ferries and Marmaray at the same fares as the card; top up in-app.", "https://uym.ibb.gov.tr/kurumsal/haberler-ve-duyurular/ula%C5%9F%C4%B1m-tamamen-dijitalle%C5%9Fti"),
       ],
@@ -153,7 +157,7 @@ export const CITY_FACTS = {
     relocation: {
       registration: [
         F("If your address changes during the residence-permit period you must report it within 20 working days to the provincial Göç İdaresi and the Nüfus ve Vatandaşlık İşleri Müdürlüğü (rental contract or title deed, ID copies, utility bill). The residence certificate is then downloadable from e-Devlet.", "https://www.goc.gov.tr/ikamet-genel-bilgiler"),
-        F("e-Devlet access: foreigners with a 98/99 ID number get an e-Devlet password at any PTT branch with their residence permit card, or work permit + passport; first password 5 TL.", "https://www.ptt.gov.tr/e-devlet-kapisi-sifre-verme-islemleri"),
+        L("e-Devlet access: foreigners with a 98/99 ID number get an e-Devlet password at any PTT branch with their residence permit card, or work permit + passport, for a small fee.", "https://www.ptt.gov.tr/e-devlet-kapisi-sifre-verme-islemleri", "Current PTT fee"),
       ],
       residencePermit: [
         F("Work permit: the employer applies through the Ministry of Labour's e-İzin system; from abroad it starts at a Turkish consulate. Evaluation up to 30 days, and a valid work permit counts as a residence permit.", "https://www.csgb.gov.tr/en/frequently-asked-questions/directorate-general-of-international-labour-force/work-permit/"),
@@ -168,7 +172,7 @@ export const CITY_FACTS = {
       ],
       mobile: [
         F("Foreigners open a prepaid line at an operator store with a valid passport; operator-specific postpaid eligibility for foreigners is unverified — check commitment periods and termination fees before signing.", "https://www.turkcell.com.tr/destek/turkcellli-olmak/turkcellli-olmak/yabanci-uyrukluyum-nasil-hat-alabilirim"),
-        F("Bringing your own phone: works with a Turkish SIM for 120 days, then the IMEI must be registered via e-Devlet (54,258 TL in 2026) or the device is blocked on all Turkish networks.", "https://www.turkiyetoday.com/nation/deadline-nears-new-regulation-ends-dual-sim-loophole-in-turkiye-3218016"),
+        L("Bringing your own phone: works with a Turkish SIM for 120 days, then the IMEI must be registered via e-Devlet (fee revalued every January) or the device is blocked on all Turkish networks.", "https://www.turkiye.gov.tr/btk-imei-sorgulama", "Current IMEI fee (e-Devlet)"),
       ],
       drivingLicence: [
         F("Foreigners may drive on a foreign licence for 6 months after entry; after that a Turkish licence is required.", "https://www.nvi.gov.tr/sss-surucu-belgeleri-hizmetleri"),
@@ -185,9 +189,9 @@ export const CITY_FACTS = {
   Belgrade: {
     practical: {
       sim: [
-        F("Yettel tourist pack: prepaid SIM or eSIM with 50 GB for 30 days, 1,399 RSD; sold in Yettel stores or online.", "https://www.yettel.rs/sr/privatni/ponuda/mobilni-internet/prepaid"),
-        F("A1 'Welcome SIM': 1,000 RSD (about €8) with 200 GB for 7 days, extendable to 15 or 30 days; SIM or eSIM, sold in A1 shops, online and at Nikola Tesla Airport. A valid passport is required.", "https://a1.rs/privatni/internet/prepaid_net"),
-        F("mts: 'Turist SIM' 600 RSD (15 GB, 5 days) or 'Super Turist SIM' 1,800 RSD (30 days).", "https://mts.rs/Privatni/Mobilna/Pripejd/Tarife/a114891-Turist-SIM-i-Super-Turist-SIM.html"),
+        L("Yettel tourist pack: prepaid SIM or eSIM with a 30-day data allowance; sold in Yettel stores or online.", "https://www.yettel.rs/sr/privatni/ponuda/mobilni-internet/prepaid", "Current Yettel tourist price"),
+        L("A1 'Welcome SIM': a 7-day data pack extendable to 15 or 30 days; SIM or eSIM, sold in A1 shops, online and at Nikola Tesla Airport. A valid passport is required.", "https://a1.rs/privatni/internet/prepaid_net", "Current A1 Welcome SIM price"),
+        L("mts: 'Turist SIM' (5 days) or 'Super Turist SIM' (30 days).", "https://mts.rs/Privatni/Mobilna/Pripejd/Tarife/a114891-Turist-SIM-i-Super-Turist-SIM.html", "Current mts tourist prices"),
         F("Prepaid registration is mandatory (since 10 February 2025) with ID card or passport; unregistered numbers are deactivated.", "https://www.paragraf.rs/dnevne-vesti/301224/301224-vest8.html"),
         F("EU 'roam like at home' does NOT cover Serbia — the Commission only proposed opening negotiations in February 2026. EU plans incur roaming surcharges here.", "https://enlargement.ec.europa.eu/news/roam-home-commission-proposes-open-negotiations-extend-eu-roaming-western-balkans-2026-02-25_en"),
         F("International eSIMs work: Airalo's Serbia plans run on the A1 network.", "https://www.airalo.com/serbia-esim"),
@@ -200,8 +204,8 @@ export const CITY_FACTS = {
       transportPayment: [
         F("Public transport is FREE for everyone since 1 January 2025 — all city and suburban buses, trams, trolleybuses and BG Voz. No ticket or card needed.", "https://www.tob.rs/en/info/useful-info/city-public-transport"),
         F("City of Belgrade confirms free transport including night lines; a night line to Nikola Tesla Airport was added 1 September 2025.", "https://www.beogradsad.rs/lat/gradske-inicijative/a94645/Besplatan-javni-prevoz.html"),
-        F("Exception: airport minibus A1 (Slavija – Nikola Tesla Airport) costs 400 RSD, paid to the driver; runs about 06:00–01:00.", "https://www.busevi.com/red-voznje/linija-a1-trg-slavija-kralja-milutina-aerodrom-nikola-tesla/"),
-        F("Exception: minibus express E-lines (E2, E6, E9…) are paid on board — 200 RSD in January 2025; 2026 fare not re-confirmed.", "https://www.espreso.co.rs/vesti/beograd/1512443/minibus-ekspres-linije-e-i-ekspres-liniju-a1-u-beogradu-se-i-dalje-placaju"),
+        L("Exception: airport minibus A1 (Slavija – Nikola Tesla Airport) is paid to the driver; runs about 06:00–01:00.", "https://www.busevi.com/red-voznje/linija-a1-trg-slavija-kralja-milutina-aerodrom-nikola-tesla/", "Current A1 fare & timetable"),
+        L("Exception: minibus express E-lines (E2, E6, E9…) are paid on board, outside the free integrated system.", "https://www.gsp.rs/", "Current GSP information"),
       ],
       pharmacies: [
         F("Apoteka Beograd 'Prvi maj', Kralja Milana 9 — open 00–24 every day; tel. 011 3241-349.", "https://www.beograd94.rs/sr/za-pacijente/de%C5%BEurne-apoteke"),
@@ -216,7 +220,7 @@ export const CITY_FACTS = {
       taxi: [
         F("Pink Taxi: 19803 (24/7), app 'Pink Taxi Nova'; cards accepted in all vehicles.", "https://pinktaxi.info/"),
         F("Naxis Taxi: 19804, call centre +381 11 358 11 11, toll-free 0800 11 9804; cards accepted.", "https://naxis.rs/en/"),
-        F("Airport: take a fixed-price voucher from the e-kiosks in baggage claim/arrivals — Zone 1 (Novi Beograd/Zemun) 2,700 RSD, Zone 2 (Stari grad, Vračar, Savski venac) 3,500 RSD, Zone 3 4,300 RSD, Zone 4 5,800 RSD. The driver must charge exactly the voucher amount.", "https://www.republika.rs/vesti/beograd/682570/taksi-automat-aerodrom-nkola-tesla"),
+        L("Airport: take a fixed-price voucher from one of four e-kiosks (three in baggage claim, one in the arrivals lounge) — the kiosk shows the current price for your city zone. The driver must charge exactly the voucher amount; up to 4 passengers with luggage.", "https://beg.aero/eng/practical-informations/taxi-service", "Airport taxi page (official)"),
       ],
       emergency: [
         F("Police 192 · Fire 193 · Ambulance (Hitna pomoć) 194. Use these national numbers.", "https://n1info.rs/vesti/panik-poziv-panik-taster-srbija-broj-112-broj-za-hitne-slucajeve/"),
@@ -267,19 +271,19 @@ export const CITY_FACTS = {
     practical: {
       sim: [
         F("Anatel rules let foreigners buy and register a prepaid SIM with only a passport — no CPF needed. In-store registration is the reliable route.", "https://acel.org.br/928-estrangeiros-podem-comprar-chip-pre-pago-de-celular-so-com-passaporte"),
-        F("TIM visitor prepaid: activated with passport + Brazilian accommodation address (dial *144 or a TIM store); 1.5 GB/7-day pack R$25. Credits at banks, lottery shops and pharmacies.", "https://www.tim.com.br/ajuda/international-visitors"),
-        F("Vivo Tourist Plan (since October 2025): digital eSIM for foreign visitors, R$55 for 25 GB 5G + unlimited calls, 30 days; bought on vivo.com.br with your passport number before arrival.", "https://teletime.com.br/28/10/2025/vivo-lanca-plano-digital-com-5g-para-estrangeiros/"),
-        F("Claro prepaid for tourists registers with passport in store or via *552; SIM roughly R$10–30 plus weekly packs R$20–30; Claro stores at GRU airport.", "https://www.recharge.com/blog/pt/pt/chip-claro-para-turistas-guia-para-ativar-sem-cpf"),
-        F("International eSIMs work: Airalo's Brazil plans run on the TIM network (unlimited from about US$11 for 3 days).", "https://www.airalo.com/brazil-esim"),
+        L("TIM visitor prepaid: activated with passport + Brazilian accommodation address (dial *144 or a TIM store); short web packs are sold by the week. Credits at banks, lottery shops and pharmacies.", "https://www.tim.com.br/ajuda/international-visitors", "Current TIM visitor packs"),
+        L("Vivo Tourist Plan (since October 2025): digital eSIM for foreign visitors with 5G data and unlimited domestic calls for 30 days; bought on vivo.com.br with your passport number before arrival.", "https://www.vivo.com.br/", "Current Vivo tourist plan"),
+        F("Claro prepaid for tourists registers with passport in store or via *552; Claro stores at GRU airport. (Claro's own site is only reachable from inside Brazil.)", "https://www.recharge.com/blog/pt/pt/chip-claro-para-turistas-guia-para-ativar-sem-cpf"),
+        L("International eSIMs work: Airalo's Brazil plans run on the TIM network.", "https://www.airalo.com/brazil-esim", "Current eSIM plans"),
       ],
       rideHailing: [
-        F("Uber and 99 both operate. From GRU, Uber runs 24 h — pick your terminal and pickup point in the app; typical GRU → city fare about R$107, 45–50 min.", "https://www.uber.com/global/pt-br/r/routes/gru-to-sao-paulo-sp-br"),
+        L("Uber and 99 both operate. From GRU, Uber runs 24 h — pick your terminal and pickup point in the app; allow 45–60 minutes to the centre.", "https://www.uber.com/global/pt-br/r/routes/gru-to-sao-paulo-sp-br", "Current fare estimate GRU → city"),
         F("Since 18 March 2026 GRU Terminal 2 has a dedicated 'Pick Up' plaza with 24 numbered zones for Uber, 99 and Rhino; the app assigns your zone and staff guide you.", "https://www.aeroportodeguarulhos.org/aeroporto-de-guarulhos-inaugura-nova-area-para-embarque-em-carros-de-aplicativo-com-100-vagas/"),
         F("At Congonhas (CGH) pickups use colour-coded sectors on the lower-level curb, shown in the app.", "https://www.uber.com/br/pt-br/newsroom/uber-inicia-nova-operacao-de-embarque-no-aeroporto-de-congonhas/"),
       ],
       transportPayment: [
-        F("Fares from 6 January 2026: bus R$5.30 · Metrô/CPTM R$5.40 · bus+rail integration R$9.38 (Bilhete Único) · 24-hour bus pass R$20.25. Bilhete Único allows 4 bus rides within 3 hours for one fare.", "https://www.sptrans.com.br/tarifas/"),
-        F("Single Metrô/CPTM journey: QR-code ticket R$5.40 from station ticket offices, machines, the TOP app, WhatsApp (11) 3888-2200 or accredited shops. The reloadable TOP card covers Metrô, CPTM and intermunicipal buses.", "https://www.metro.sp.gov.br/pt_BR/sua-viagem/bilhetes-cartoes/"),
+        L("One fare per ride on buses and on Metrô/CPTM, a discounted bus+rail integration with the Bilhete Único, and a 24-hour bus pass. Bilhete Único allows 4 bus rides within 3 hours for one fare. Fares are reset each January.", "https://www.sptrans.com.br/tarifas/", "Current SPTrans fares"),
+        L("Single Metrô/CPTM journey: QR-code ticket from station ticket offices, machines, the TOP app, WhatsApp (11) 3888-2200 or accredited shops. The reloadable TOP card covers Metrô, CPTM and intermunicipal buses.", "https://www.metro.sp.gov.br/pt_BR/sua-viagem/bilhetes-cartoes/", "Current Metrô fares & tickets"),
         F("Contactless bank cards (Visa, Mastercard, Elo) work only at marked turnstiles in a pilot on Metrô Lines 1, 2 and 3 and on CPTM/ViaMobilidade Lines 8 and 9 (as of May 2026); no bus integration, 30-minute reuse lock. Phone wallets accepted on the same lines since April 2026.", "https://tvtnews.com.br/metro-e-cptm-ampliam-pagamento-por-aproximacao-nas-catracas-em-sp/"),
         F("On SPTrans buses, contactless bank cards work only on a small pilot (14 lines, 3 terminals) — not system-wide. Get a Bilhete Único at a bus-terminal service post with a passport, or register online.", "https://www.sptrans.com.br/perguntas-e-respostas/?sobre=pagamento-debito-credito"),
       ],
@@ -308,8 +312,8 @@ export const CITY_FACTS = {
     },
     relocation: {
       registration: [
-        F("Temporary-visa holders register with the Polícia Federal within 90 days of entry: fill the gov.br form, then book an in-person appointment; CRNM card fee R$204.77, issued in about 30 business days.", "https://www.gov.br/pt-br/servicos/registrar-se-como-estrangeiro-no-brasil"),
-        F("Checklist (July 2026): passport with visa, proof of Brazilian address (under 3 months), criminal-record certificates from countries lived in over the last 5 years, paid fees (R$168.73 + R$204.77). Get the CPF first.", "https://www.ribeirocavalcante.com.br/rnm-estrangeiros-checklist-2026"),
+        L("Temporary-visa holders register with the Polícia Federal within 90 days of entry: fill the gov.br form, then book an in-person appointment; the CRNM card is issued in about 30 business days.", "https://www.gov.br/pt-br/servicos/registrar-se-como-estrangeiro-no-brasil", "Current fees (gov.br)"),
+        L("Checklist: passport with visa, proof of Brazilian address (under 3 months), criminal-record certificates from countries lived in over the last 5 years, paid fees. Get the CPF first.", "https://www.gov.br/pt-br/servicos/registrar-se-como-estrangeiro-no-brasil", "Current document list"),
       ],
       residencePermit: [
         F("Work-based residence authorisation is requested from the Ministry of Justice via MigranteWeb (usually filed by the employer); the consulate then issues the temporary work visa; after entry you register with the Polícia Federal.", "https://portaldeimigracao.mj.gov.br/pt/destaques-e-novidades/2-sem-categoria/400846-autorizacao-de-trabalho-informacoes-e-procedimentos"),
@@ -317,7 +321,7 @@ export const CITY_FACTS = {
       ],
       taxId: [
         F("Get the CPF before arrival, free, at a Brazilian consulate (book via e-consular) with passport and the FCPF form — issued electronically. It unlocks bank accounts, contracts and most services.", "https://www.gov.br/pt-br/servicos/inscrever-no-cpf-no-exterior"),
-        F("In Brazil: free online or at Receita Federal, or R$7 at Correios, Banco do Brasil, Caixa or cartórios, using the 'Inscrever Estrangeiro no CPF' form with passport.", "https://www.gov.br/pt-br/servicos/inscrever-no-cpf"),
+        L("In Brazil: free online or at Receita Federal, or for a small charge at Correios, Banco do Brasil, Caixa or cartórios, using the 'Inscrever Estrangeiro no CPF' form with passport.", "https://www.gov.br/pt-br/servicos/inscrever-no-cpf", "Current CPF procedure"),
       ],
       banking: [
         F("Resident foreigners open accounts with CPF + RNM/CRNM + proof of address; most fintechs accept the RNM with a CPF. Non-resident accounts only at FX-authorised banks (C6, Rendimento, BTG Pactual).", "https://www.serasa.com.br/blog/conta-digital-para-imigrantes/"),
@@ -344,9 +348,9 @@ export const CITY_FACTS = {
     practical: {
       sim: [
         F("Switzerland is NOT covered by EU 'roam like at home' — EU plans may charge extra here.", "https://digital-strategy.ec.europa.eu/en/library/roaming-european-union-brochure"),
-        F("Swisscom Prepaid: CHF 20 one-off which becomes your credit; Prepaid Flat 7 (unlimited Swiss data and calls, 7 days) CHF 20, Flat 30 CHF 65. SIM or eSIM — the tourist eSIM can be ordered online before arrival.", "https://www.swisscom.ch/en/residential/mobile-subscription/prepaid/tourists.html"),
-        F("Sunrise Prepaid: starter pack CHF 19.90 incl. CHF 20 credit; sold in Sunrise shops, Migros, Coop, Aldi, kiosks, SBB ticket machines and online (eSIM in minutes). Passport or ID required.", "https://www.sunrise.ch/en/mobile/prepaid"),
-        F("Salt PrePay: free SIM with CHF 10 credit; 1 GB CHF 9.95 · 5 GB CHF 14.95 · 25 GB CHF 29.95 (30 days), or unlimited CHF 1.99/day.", "https://www.salt.ch/en/mobile/plan/prepay"),
+        L("Swisscom Prepaid: a one-off SIM price that becomes your starting credit, plus 7-day and 30-day unlimited Swiss flats. SIM or eSIM — the tourist eSIM can be ordered online before arrival.", "https://www.swisscom.ch/en/residential/mobile-subscription/prepaid/tourists.html", "Current Swisscom prepaid prices"),
+        L("Sunrise Prepaid: starter pack with matching credit; sold in Sunrise shops, Migros, Coop, Aldi, kiosks, SBB ticket machines and online (eSIM in minutes). Passport or ID required.", "https://www.sunrise.ch/en/mobile/prepaid", "Current Sunrise prepaid prices"),
+        L("Salt PrePay: free SIM with starting credit; 30-day data packs in three sizes or a daily unlimited option.", "https://www.salt.ch/en/mobile/plan/prepay", "Current Salt PrePay prices"),
         F("All Swiss prepaid SIMs must be registered with passport or ID at the point of sale.", "https://www.moneyland.ch/en/internet-prepaid-sim-travel-tourist-switzerland"),
         F("Zurich Airport: Swisscom and Salt stores in Airport Shopping opposite Arrivals 2 (08:00–21:00).", "https://www.traveltomtom.net/destinations/europe/switzerland/sim-card-zurich"),
       ],
@@ -356,13 +360,13 @@ export const CITY_FACTS = {
       ],
       transportPayment: [
         F("SBB EasyRide (in the SBB Mobile app): check in before departure, check out at your destination; it computes the cheapest ticket on trains, buses, trams and boats nationwide and caps the day at the Day Pass price. Pays by card, TWINT or monthly invoice — not Apple Pay.", "https://www.sbb.ch/en/travel-information/apps/sbb-mobile/easyride.html"),
-        F("VBSH city buses are in the OSTWIND zone fare: a single for the Schaffhausen city zone costs CHF 3.30 (1 hour). Digital tickets (EasyRide, FAIRTIQ) must be checked in BEFORE boarding.", "https://www.vbsh.ch/tickets/tickets-und-preise"),
+        L("VBSH city buses are in the OSTWIND zone fare: a single ticket for the Schaffhausen city zone is valid 1 hour; journeys to Zurich use the Z-Pass joint fare. Digital tickets (EasyRide, FAIRTIQ) must be checked in BEFORE boarding.", "https://www.vbsh.ch/tickets/tickets-und-preise", "Current VBSH fares"),
         F("VBSH Ticketeria at Schaffhausen station: Mon–Fri 08:00–18:00, Sat 09:00–13:00; customer service +41 52 644 20 20. Unverified: whether drivers still sell tickets on board.", "https://www.vbsh.ch/tickets/ticketkauf"),
         F("Zurich Airport ↔ Schaffhausen by rail: the S24 runs Schaffhausen – Winterthur – Zürich Flughafen (about 37–40 minutes).", "https://en.wikipedia.org/wiki/S24_(ZVV)"),
       ],
       pharmacies: [
         F("Since 1 June 2025 the canton no longer runs a night-time on-duty pharmacy: pharmacies cover Mon–Sat 07:00–20:00 and Sun/holidays 08:00–18:00; outside those hours only the doctors' emergency practice and the hospital emergency department supply medication.", "https://sh.ch/CMS/Webseite/Kanton-Schaffhausen/Beh-rde/Regierung/Staatskanzlei-16946780-DE.html"),
-        F("Bahnhof-Apotheke, Bahnhofstrasse 27 — open 365 days, Mon–Sat 07:00–20:00, Sun/holidays 08:00–18:00; emergency line 052 625 26 86 (surcharge CHF 17.30 outside regular hours).", "https://bahnhofapotheke.ch/notfallnummern/"),
+        L("Bahnhof-Apotheke, Bahnhofstrasse 27 — open 365 days, Mon–Sat 07:00–20:00, Sun/holidays 08:00–18:00; emergency line 052 625 26 86 (a surcharge applies outside regular hours).", "https://bahnhofapotheke.ch/notfallnummern/", "Current emergency surcharge"),
       ],
       printShops: [
         F("Copy+Print AG, Ebnatstrasse 65, 8200 Schaffhausen — tel. +41 52 624 84 77, info@copyprintsh.ch; Mon–Thu 07:45–12:00 / 13:15–17:00, Fri mornings only.", "https://copyprintsh.ch/kontakt/"),

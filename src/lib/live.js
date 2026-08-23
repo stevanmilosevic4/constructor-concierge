@@ -133,17 +133,24 @@ export function fmtRate(x) {
 /*  City photo — the Wikipedia lead image                              */
 /* ------------------------------------------------------------------ */
 
+/* Titles default to English Wikipedia; a "de:" prefix reads the German
+   edition for places that only exist there (Bremen's Bürgerpark, Überseestadt). */
 export function useCityImage(wikiTitle) {
   return useLive(
     `img:${wikiTitle}`,
     7 * 24 * 60 * 60 * 1000, // a week
     async () => {
-      const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiTitle)}`)
+      const m = /^([a-z]{2}):(.+)$/.exec(wikiTitle || "")
+      const lang = m ? m[1] : "en"
+      const title = m ? m[2] : wikiTitle
+      const r = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`)
       if (!r.ok) throw new Error("wiki " + r.status)
       const d = await r.json()
+      if (d.type === "disambiguation") throw new Error("disambiguation")
       const src = d.originalimage?.source || d.thumbnail?.source
       if (!src) throw new Error("no image")
-      return { src, page: d.content_urls?.desktop?.page, credit: "Wikipedia" }
+      if (/\.svg(\.png)?(\?|$)/i.test(src)) throw new Error("diagram, not a photo")
+      return { src, thumb: d.thumbnail?.source || src, page: d.content_urls?.desktop?.page, credit: "Wikipedia" }
     },
     [wikiTitle],
   )

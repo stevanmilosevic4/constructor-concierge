@@ -180,11 +180,17 @@ function FactList({ items, emptyTitle }) {
       {items.map((it, i) => (
         <li key={i} className="text-sm leading-relaxed" style={{ color: C.ink }}>
           {it.text}{" "}
-          {it.src && (
+          {it.live ? (
+            <a href={it.src} target="_blank" rel="noreferrer"
+              className="ml-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold align-baseline transition hover:opacity-80"
+              style={{ backgroundColor: "#E6F6FF", color: C.confident, border: `1px solid #B8E4FF` }}>
+              <ExternalLink size={10} /> {it.live}
+            </a>
+          ) : it.src ? (
             <a href={it.src} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-[11px] font-semibold align-baseline" style={{ color: C.confident }}>
               <LinkIcon size={10} /> source
             </a>
-          )}
+          ) : null}
         </li>
       ))}
     </ul>
@@ -228,6 +234,30 @@ function PartnerCard({ def, rows, city }) {
       )}
     </Card>
   )
+}
+
+
+/* A real, credited photo from Wikipedia's lead image for an article.
+   Renders nothing at all if the article has no image — never a placeholder. */
+function WikiPhoto({ title, caption, className = "", height = 200 }) {
+  const img = useCityImage(title)
+  if (!img?.src) return null
+  return (
+    <figure className={"relative overflow-hidden rounded-lg " + className} style={{ height }}>
+      <img src={img.src} alt={caption || title} className="h-full w-full object-cover" loading="lazy" />
+      <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 px-3 py-2 text-[11px] text-white"
+        style={{ background: "linear-gradient(to top, rgba(0,32,77,0.85), rgba(0,32,77,0))" }}>
+        <span className="font-semibold">{caption}</span>
+        {img.page && <a href={img.page} target="_blank" rel="noreferrer" className="shrink-0 text-[9px] text-white/70 hover:text-white">Photo: Wikipedia</a>}
+      </figcaption>
+    </figure>
+  )
+}
+
+function WikiThumb({ title, alt }) {
+  const img = useCityImage(title)
+  if (!img?.thumb) return null
+  return <img src={img.thumb} alt={alt} className="h-16 w-16 shrink-0 rounded-lg object-cover" loading="lazy" />
 }
 
 /* ------------------------------------------------------------------ */
@@ -401,8 +431,9 @@ function PracticalPage({ city, d }) {
   return (
     <>
       <Banner tone="info" icon={Wrench} title={`The things that go wrong on day one in ${city}`}>
-        Each line was checked against an official or operator source — the link is next to it. If something has
-        changed, tell the concierge team and it is corrected for everyone.
+        Each line was checked against an official or operator source — the link is next to it. Anything that moves —
+        prices, fares, fees, thresholds — is deliberately not quoted here: the blue link takes you to the live figure,
+        so this pack never goes stale. If a rule has changed, tell the concierge team and it is corrected for everyone.
       </Banner>
       <div className="grid gap-4 sm:grid-cols-2">
         {PRACTICAL_FACTS.map((def) => (
@@ -415,11 +446,12 @@ function PracticalPage({ city, d }) {
 
 function CountryPage({ city, d }) {
   const p = d.countryProfile
-  const block = (title, Icon, paras) => (
+  const block = (title, Icon, paras, image) => (
     <Card>
       <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
         <Icon size={15} style={{ color: C.confident }} /> {title}
       </div>
+      {image && <WikiPhoto title={image[0]} caption={image[1]} className="mb-3" />}
       <div className="space-y-3">
         {(paras || []).map((t, i) => <p key={i} className="text-sm leading-relaxed" style={{ color: C.ink }}>{t}</p>)}
       </div>
@@ -429,14 +461,14 @@ function CountryPage({ city, d }) {
     <>
       {p ? (
         <>
-          {block(`${d.country} — geography`, Globe2, p.geography)}
-          {block(`${d.country} — history`, Landmark, p.history)}
-          {block(`${d.country} — culture & etiquette`, BookOpen, p.culture)}
+          {block(`${d.country} — geography`, Globe2, p.geography, p.images?.geography)}
+          {block(`${d.country} — history`, Landmark, p.history, p.images?.history)}
+          {block(`${d.country} — culture & etiquette`, BookOpen, p.culture, p.images?.culture)}
         </>
       ) : (
         <DesignatedArea icon={Globe2} title="Country profile" body={`A geography, history and culture profile for ${d.country || city} is added by the concierge team.`} />
       )}
-      {(d.history || []).length > 0 && block(`${city} — the city's story`, BookOpen, d.history)}
+      {(d.history || []).length > 0 && block(`${city} — the city's story`, BookOpen, d.history, [d.wikiTitle, city])}
       {(d.funFacts || []).length > 0 && (
         <div className="grid gap-2 sm:grid-cols-2">
           {d.funFacts.map((f, i) => (
@@ -462,12 +494,15 @@ function PlacesPage({ city, d }) {
         <DesignatedArea icon={Compass} title="Places to visit" body="Sightseeing suggestions for this city are added by the concierge team." />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
-          {places.map(([name, note], i) => (
+          {places.map(([name, note, wiki], i) => (
             <Card key={i}>
               <div className="flex items-start gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black" style={{ backgroundColor: "#E6F6FF", color: C.confident }}>{i + 1}</span>
-                <div>
-                  <div className="text-sm font-black" style={{ color: C.navy }}>{name}</div>
+                {wiki ? <WikiThumb title={wiki} alt={name} /> : null}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-black" style={{ backgroundColor: "#E6F6FF", color: C.confident }}>{i + 1}</span>
+                    {name}
+                  </div>
                   <div className="mt-0.5 text-xs leading-relaxed" style={{ color: C.muted }}>{note}</div>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { useStore } from "../lib/store.js"
 import { POLICY_VERSION } from "../lib/policy.js"
 import { MODES, PARTNER_SECTIONS, PRACTICAL_FACTS, RELOCATION_FACTS, forAudience } from "../data/packSections.js"
 import { QR } from "../components/ui.jsx"
+import { useCityImage } from "../lib/live.js"
 
 /* The downloadable pack. One printable page-flow per city and audience,
    rendered from the same records as the app, so it can never drift from
@@ -17,6 +18,17 @@ import { QR } from "../components/ui.jsx"
    skip offsite/event suppliers. */
 
 const A4 = { maxWidth: "190mm" }
+
+function PrintPhoto({ title, caption }) {
+  const img = useCityImage(title)
+  if (!img?.thumb) return null
+  return (
+    <figure className="float-right ml-3 mb-1 w-[58mm]" style={{ breakInside: "avoid" }}>
+      <img src={img.thumb} alt={caption || title} className="w-full rounded" style={{ maxHeight: "42mm", objectFit: "cover" }} />
+      <figcaption className="text-[8.5px]" style={{ color: C.muted }}>{caption} · Wikipedia</figcaption>
+    </figure>
+  )
+}
 
 function H2({ children }) {
   return (
@@ -87,7 +99,9 @@ export default function PackPrint({ city, mode }) {
               <ul className="mt-0.5 space-y-1">
                 {items.map((it, i) => (
                   <li key={i} className="text-[11px] leading-snug" style={{ color: C.ink }}>
-                    {it.text}{it.src && <sup className="ml-0.5 font-bold" style={{ color: C.confident }}>{sources.idx(it.src)}</sup>}
+                    {it.text}
+                    {it.live && <span className="ml-1 font-bold" style={{ color: C.confident }}>→ {it.live}</span>}
+                    {it.src && <sup className="ml-0.5 font-bold" style={{ color: C.confident }}>{sources.idx(it.src)}</sup>}
                   </li>
                 ))}
               </ul>
@@ -153,7 +167,9 @@ export default function PackPrint({ city, mode }) {
                         <div className="text-[10.5px] italic" style={{ color: C.muted }}>Being verified — not yet in the pack.</div>
                       ) : items.map((it, j) => (
                         <div key={j} className="text-[11px] leading-snug" style={{ color: C.ink }}>
-                          {it.text}{it.src && <sup className="ml-0.5 font-bold" style={{ color: C.confident }}>{sources.idx(it.src)}</sup>}
+                          {it.text}
+                          {it.live && <span className="ml-1 font-bold" style={{ color: C.confident }}>→ {it.live}</span>}
+                          {it.src && <sup className="ml-0.5 font-bold" style={{ color: C.confident }}>{sources.idx(it.src)}</sup>}
                         </div>
                       ))}
                     </div>
@@ -265,8 +281,9 @@ export default function PackPrint({ city, mode }) {
           <>
             <H2>{d.country} — geography, history, culture</H2>
             {["geography", "history", "culture"].map((k) => (
-              <div key={k} className="mb-3">
+              <div key={k} className="mb-3" style={{ overflow: "hidden" }}>
                 <div className="text-[10px] font-bold uppercase tracking-wide" style={{ color: C.muted }}>{k}</div>
+                {cp.images?.[k] && <PrintPhoto title={cp.images[k][0]} caption={cp.images[k][1]} />}
                 {cp[k].map((t, i) => <p key={i} className="mt-1 text-[11px] leading-relaxed" style={{ color: C.ink }}>{t}</p>)}
               </div>
             ))}
@@ -295,7 +312,7 @@ export default function PackPrint({ city, mode }) {
         )}
 
         <div className="mt-8 border-t pt-3 text-[9.5px] leading-snug" style={{ borderColor: C.rule, color: C.muted }}>
-          {d.owner} · pack content last updated {d.updatedAt} · facts verified against the linked sources at the date shown.
+          {d.owner} · pack content last updated {d.updatedAt} · facts verified against the linked sources at the date shown; figures that change (prices, fares, fees) are not printed — the numbered source is the live page.
           Rules derived from the {POLICY_VERSION}; where this pack differs from the policy, the policy governs.
           The concierge team informs and routes — it never approves and never books. Sightseeing notes are general
           recommendations, not endorsements. <span className="font-bold uppercase tracking-[0.18em]" style={{ color: C.navy }}>Constructing the future</span>
