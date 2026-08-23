@@ -8,6 +8,7 @@
 
 import { useSyncExternalStore } from "react"
 import { SEED_CITIES } from "../data/cities.js"
+import { emptyPartnerAreas } from "../data/packSections.js"
 
 const KEY = "constructor-concierge-v2"
 
@@ -66,6 +67,27 @@ function seed() {
 
 /* ------------------------------------------------------------------ */
 
+
+/* Cities: partner records the team entered win; the researched layers
+   (facts, country profile, places, history) always come from code, so a
+   corrected fact reaches every device on the next load. New partner
+   slots added in an update appear as empty lists. */
+function mergeCities(seedCities, savedCities) {
+  if (!savedCities) return seedCities
+  const out = {}
+  for (const [name, saved] of Object.entries(savedCities)) {
+    const seed = seedCities[name]
+    out[name] = seed
+      ? { ...emptyPartnerAreas(), ...seed, ...saved,
+          practical: seed.practical, relocation: seed.relocation,
+          countryProfile: seed.countryProfile, places: seed.places,
+          history: seed.history, funFacts: seed.funFacts, transport: seed.transport }
+      : { ...emptyPartnerAreas(), ...saved }
+  }
+  for (const [name, seed] of Object.entries(seedCities)) if (!out[name]) out[name] = seed
+  return out
+}
+
 let state = load()
 const listeners = new Set()
 
@@ -76,7 +98,12 @@ function load() {
       const parsed = JSON.parse(raw)
       const s = seed()
       // Shallow merge so new seed keys appear after an app update.
-      return { ...s, ...parsed, cities: parsed.cities || s.cities, people: parsed.people || s.people, allowedDomains: parsed.allowedDomains || s.allowedDomains }
+      return {
+        ...s, ...parsed,
+        cities: mergeCities(s.cities, parsed.cities),
+        people: parsed.people || s.people,
+        allowedDomains: parsed.allowedDomains || s.allowedDomains,
+      }
     }
   } catch { /* corrupted or unavailable — reseed */ }
   return seed()

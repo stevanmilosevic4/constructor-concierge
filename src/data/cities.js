@@ -16,20 +16,14 @@
    not stored here.
    ===================================================================== */
 
+import { emptyPartnerAreas } from "./packSections.js"
+import { COUNTRIES, PLACES } from "./countries.js"
+import { CITY_FACTS } from "./facts.js"
+
 export const NEAR_CATS = ["Food", "Shop", "Health", "Work", "Move", "Transport", "Service", "Wellbeing"]
 
-/* Every city starts with the full set of empty partner slots. */
-const emptyPartnerAreas = () => ({
-  transfers: [],   // [route, price, note] — partner rate card
-  hotels: [],      // { name, area, address, addressLocal, note, near: [] }
-  offers: [],      // { name, cat, offer, how, code }
-  eat: [],         // [label, note]
-  health: [],      // [label, note]
-  family: [],      // [label, note]
-  wellbeing: [],   // [label, note]
-  wallet: { hotelLocal: "", driver: null, fixedFare: "", insurance: "", embassyNote: "" },
-})
-
+/* Partner slots (all empty until signed) come from the section registry,
+   so the pack, the editor and the PDF agree on what exists. */
 export const SEED_CITIES = {
   Bremen: {
     ...emptyPartnerAreas(),
@@ -237,6 +231,15 @@ export const SEED_CITIES = {
       ["Shops", "Close early Saturday, closed Sunday"],
     ],
   },
+}
+
+/* Attach the read-on-the-plane layer and the researched facts. Facts live
+   in their own files so a correction is one edit with one source. */
+for (const [name, city] of Object.entries(SEED_CITIES)) {
+  city.countryProfile = COUNTRIES[city.country] || null
+  city.places = PLACES[name] || []
+  city.practical = CITY_FACTS[name]?.practical || {}
+  city.relocation = CITY_FACTS[name]?.relocation || {}
 }
 
 /* Currencies shown in every city's rate card, per the brief:

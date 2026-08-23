@@ -2,11 +2,12 @@ import React, { useState } from "react"
 import {
   MapPin, Car, Stethoscope, Baby, Utensils, Info, Bed, Dumbbell, CloudSun,
   ChevronRight, BookOpen, Landmark, Coins, Clock, ExternalLink, Wind, Droplets,
-  Plug, Languages, GlassWater, Siren,
+  Plug, Languages, GlassWater, Siren, FileDown, Compass, Globe2, Wrench, Package, CheckCircle2, Link as LinkIcon,
 } from "lucide-react"
 import { C } from "../../brand.js"
 import { useStore } from "../../lib/store.js"
 import { RATE_CURRENCIES } from "../../data/cities.js"
+import { MODES, PARTNER_SECTIONS, PRACTICAL_FACTS, RELOCATION_FACTS, forAudience } from "../../data/packSections.js"
 import { useWeather, useRates, useCityImage, useLocalTime, convert, fmtRate } from "../../lib/live.js"
 import { Card, Pill, SectionTitle, Label, Banner, DesignatedArea } from "../../components/ui.jsx"
 
@@ -162,72 +163,106 @@ function CurrencyCard({ d }) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Shared renderers for registry-driven content                       */
+/* ------------------------------------------------------------------ */
 
-export default function CityPacks({ user }) {
-  const s = useStore()
-  const names = Object.keys(s.cities)
-  const myTrip = s.trips.find((t) => t.userId === user?.id && t.end >= new Date().toISOString().slice(0, 10))
-  const [city, setCity] = useState(myTrip?.city && s.cities[myTrip.city] ? myTrip.city : names[0])
-  const [hotelIdx, setHotelIdx] = useState(null)
-  const [family, setFamily] = useState(Boolean(myTrip?.family))
-  const [showHistory, setShowHistory] = useState(false)
-  const d = s.cities[city]
-
-  return (
-    <div className="space-y-5">
-      <SectionTitle sub="One pack per city: live weather and rates, the facts you need on arrival, and the partner network — hotels, transfers, restaurants, discounts — as the concierge team signs it.">
-        City packs
-      </SectionTitle>
-
-      <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
-        {names.map((n) => (
-          <button
-            key={n}
-            onClick={() => { setCity(n); setHotelIdx(null); setShowHistory(false) }}
-            className="shrink-0 rounded-full px-4 py-2 text-sm font-bold transition"
-            style={city === n
-              ? { backgroundColor: C.navy, color: "#fff" }
-              : { backgroundColor: "#fff", color: C.muted, border: `1px solid ${C.rule}` }}
-          >
-            {n}
-          </button>
-        ))}
+/* Researched items: { text, src }[] — every line shows where it came from. */
+function FactList({ items, emptyTitle }) {
+  if (!items || items.length === 0) {
+    return (
+      <div className="rounded-lg px-3 py-2.5 text-xs leading-relaxed" style={{ backgroundColor: C.paper, color: C.muted }}>
+        {emptyTitle || "Being verified"} — the concierge team adds this once it has been checked against an official source. Nothing is invented to fill the gap.
       </div>
+    )
+  }
+  return (
+    <ul className="space-y-2">
+      {items.map((it, i) => (
+        <li key={i} className="text-sm leading-relaxed" style={{ color: C.ink }}>
+          {it.text}{" "}
+          {it.src && (
+            <a href={it.src} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 text-[11px] font-semibold align-baseline" style={{ color: C.confident }}>
+              <LinkIcon size={10} /> source
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}
 
-      <CityHero name={city} d={d} />
+function FactCard({ def, items, emptyTitle }) {
+  const Icon = def.icon
+  return (
+    <Card>
+      <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
+        <Icon size={15} style={{ color: C.confident }} /> {def.title}
+      </div>
+      <FactList items={items} emptyTitle={emptyTitle} />
+    </Card>
+  )
+}
 
-      <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{d.intro}</p>
+function PartnerCard({ def, rows, city }) {
+  const Icon = def.icon
+  const tuple3 = def.cols.length === 3
+  return (
+    <Card>
+      <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
+        <Icon size={15} style={{ color: C.confident }} /> {def.title}
+      </div>
+      {rows && rows.length > 0 ? (
+        <div className="space-y-2.5">
+          {rows.map((r, i) => (
+            <div key={i}>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm font-semibold" style={{ color: C.ink }}>{r[0]}</span>
+                {tuple3 && <span className="shrink-0 text-sm font-black" style={{ color: C.confident }}>{r[1]}</span>}
+              </div>
+              <div className="text-[11px]" style={{ color: C.muted }}>{tuple3 ? r[2] : r[1]}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <DesignatedArea icon={Icon} title={`${def.title} — ${city}`} body={def.empty} />
+      )}
+    </Card>
+  )
+}
 
+/* ------------------------------------------------------------------ */
+/*  Sub-pages                                                          */
+/* ------------------------------------------------------------------ */
+
+function PackPage({ city, d, mode, family, setFamily, hotelIdx, setHotelIdx }) {
+  const sections = forAudience(PARTNER_SECTIONS, mode)
+    .filter((s) => s.key !== "transfers")
+    .filter((s) => s.key !== "family" || mode === "relocate" || family)
+  return (
+    <>
       <div className="grid gap-4 sm:grid-cols-2">
         <WeatherCard d={d} />
         <CurrencyCard d={d} />
       </div>
 
-      {/* Discover — history & fun facts, real content to read on the plane */}
-      <Card>
-        <button onClick={() => setShowHistory(!showHistory)} className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
-            <BookOpen size={15} style={{ color: C.confident }} /> Discover {city} — history & fun facts
+      {mode === "relocate" && (
+        <Card tone="vip">
+          <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
+            <CheckCircle2 size={15} style={{ color: C.confident }} /> Your first ninety days in {city} — in order
           </div>
-          <ChevronRight size={16} style={{ color: C.blue, transform: showHistory ? "rotate(90deg)" : "none", transition: "transform .15s" }} />
-        </button>
-        {showHistory && (
-          <div className="mt-3 space-y-3 border-t pt-3" style={{ borderColor: C.rule }}>
-            {(d.history || []).map((p, i) => (
-              <p key={i} className="text-sm leading-relaxed" style={{ color: C.ink }}>{p}</p>
+          <ol className="space-y-3">
+            {RELOCATION_FACTS.map((def, i) => (
+              <li key={def.key} className="flex gap-3">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-black text-white" style={{ backgroundColor: C.navy }}>{i + 1}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-black" style={{ color: C.navy }}>{def.title}</div>
+                  <div className="mt-1"><FactList items={d.relocation?.[def.key]} emptyTitle="Being verified" /></div>
+                </div>
+              </li>
             ))}
-            {(d.funFacts || []).length > 0 && (
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {d.funFacts.map((f, i) => (
-                  <div key={i} className="flex items-start gap-2 rounded-lg p-3 text-xs leading-relaxed" style={{ backgroundColor: "#E6F6FF", color: C.confident }}>
-                    <Landmark size={13} className="mt-0.5 shrink-0" /> {f}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </Card>
+          </ol>
+        </Card>
+      )}
 
       {/* Facts on arrival */}
       <div className="grid gap-4 sm:grid-cols-2">
@@ -283,7 +318,7 @@ export default function CityPacks({ user }) {
 
       {/* Where to stay */}
       <div>
-        <Label>Where to stay</Label>
+        <Label>{mode === "relocate" ? "Where to stay while you settle" : "Where to stay"}</Label>
         {d.hotels.length > 0 ? (
           <div className="grid gap-3 sm:grid-cols-2">
             {d.hotels.map((h, i) => (
@@ -331,63 +366,203 @@ export default function CityPacks({ user }) {
         )}
       </div>
 
-      {/* Family mode */}
-      <button
-        onClick={() => setFamily(!family)}
-        className="flex w-full items-center justify-between rounded-xl2 px-4 py-3 text-sm font-bold transition"
-        style={family
-          ? { backgroundColor: "#E6F6FF", color: C.confident, border: `1.5px solid ${C.blue}` }
-          : { backgroundColor: "#fff", color: C.muted, border: `1px solid ${C.rule}` }}
-      >
-        <span className="flex items-center gap-2"><Baby size={16} /> Family mode — travelling with children</span>
-        <span>{family ? "On" : "Off"}</span>
-      </button>
-      {family && (
-        <Banner tone="info" icon={Baby} title="What family mode covers">
-          Schools, kindergartens, paediatric care and child seats on transfers. Family passports need the same
-          six-month expiry check as yours — children's expire faster. The family layer for {city} is populated
-          by the concierge team below.
-        </Banner>
+      {mode === "visit" && (
+        <>
+          <button
+            onClick={() => setFamily(!family)}
+            className="flex w-full items-center justify-between rounded-xl2 px-4 py-3 text-sm font-bold transition"
+            style={family
+              ? { backgroundColor: "#E6F6FF", color: C.confident, border: `1.5px solid ${C.blue}` }
+              : { backgroundColor: "#fff", color: C.muted, border: `1px solid ${C.rule}` }}
+          >
+            <span className="flex items-center gap-2"><Baby size={16} /> Family mode — travelling with children</span>
+            <span>{family ? "On" : "Off"}</span>
+          </button>
+          {family && (
+            <Banner tone="info" icon={Baby} title="What family mode covers">
+              Paediatric care, child seats on transfers and the family layer below. Family passports need the same
+              six-month expiry check as yours — children's expire faster.
+            </Banner>
+          )}
+        </>
       )}
 
-      {/* Partner areas */}
+      {/* Partner network, by audience */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card>
-          <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
-            <Stethoscope size={15} style={{ color: C.confident }} /> Health
-          </div>
-          {d.health.length > 0 ? <TwoCol rows={d.health} /> :
-            <DesignatedArea icon={Stethoscope} title="Medical partners" body="English-speaking clinics, priority appointments and direct-billing arrangements are added here as they're agreed." />}
-          {family && (
-            <div className="mt-3 border-t pt-3" style={{ borderColor: C.rule }}>
-              <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
-                <Baby size={15} style={{ color: C.confident }} /> Family
-              </div>
-              {d.family.length > 0 ? <TwoCol rows={d.family} /> :
-                <DesignatedArea icon={Baby} title="Family layer" body="International schools with admissions contacts, kindergartens with typical waiting times, and paediatric partners are added here." />}
+        {sections.map((def) => (
+          <PartnerCard key={def.key} def={def} rows={d[def.key]} city={city} />
+        ))}
+      </div>
+    </>
+  )
+}
+
+function PracticalPage({ city, d }) {
+  return (
+    <>
+      <Banner tone="info" icon={Wrench} title={`The things that go wrong on day one in ${city}`}>
+        Each line was checked against an official or operator source — the link is next to it. If something has
+        changed, tell the concierge team and it is corrected for everyone.
+      </Banner>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {PRACTICAL_FACTS.map((def) => (
+          <FactCard key={def.key} def={def} items={d.practical?.[def.key]} emptyTitle="Being verified" />
+        ))}
+      </div>
+    </>
+  )
+}
+
+function CountryPage({ city, d }) {
+  const p = d.countryProfile
+  const block = (title, Icon, paras) => (
+    <Card>
+      <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
+        <Icon size={15} style={{ color: C.confident }} /> {title}
+      </div>
+      <div className="space-y-3">
+        {(paras || []).map((t, i) => <p key={i} className="text-sm leading-relaxed" style={{ color: C.ink }}>{t}</p>)}
+      </div>
+    </Card>
+  )
+  return (
+    <>
+      {p ? (
+        <>
+          {block(`${d.country} — geography`, Globe2, p.geography)}
+          {block(`${d.country} — history`, Landmark, p.history)}
+          {block(`${d.country} — culture & etiquette`, BookOpen, p.culture)}
+        </>
+      ) : (
+        <DesignatedArea icon={Globe2} title="Country profile" body={`A geography, history and culture profile for ${d.country || city} is added by the concierge team.`} />
+      )}
+      {(d.history || []).length > 0 && block(`${city} — the city's story`, BookOpen, d.history)}
+      {(d.funFacts || []).length > 0 && (
+        <div className="grid gap-2 sm:grid-cols-2">
+          {d.funFacts.map((f, i) => (
+            <div key={i} className="flex items-start gap-2 rounded-lg p-3 text-xs leading-relaxed" style={{ backgroundColor: "#E6F6FF", color: C.confident }}>
+              <Landmark size={13} className="mt-0.5 shrink-0" /> {f}
             </div>
-          )}
-        </Card>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
 
-        <Card>
-          <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
-            <Utensils size={15} style={{ color: C.confident }} /> Eating & hosting
-          </div>
-          {d.eat.length > 0 ? <TwoCol rows={d.eat} /> :
-            <DesignatedArea icon={Utensils} title="Restaurant partners" body="Vetted places for client dinners and everyday lunches — with group rates where agreed — are added here." />}
-        </Card>
+function PlacesPage({ city, d }) {
+  const places = d.places || []
+  return (
+    <>
+      <Banner tone="neutral" icon={Compass} title={`Places to visit in ${city}`}>
+        General recommendations for a free afternoon or a weekend — well-known sights, not partner venues. Partner
+        restaurants and offers are on the Pack and Offers pages.
+      </Banner>
+      {places.length === 0 ? (
+        <DesignatedArea icon={Compass} title="Places to visit" body="Sightseeing suggestions for this city are added by the concierge team." />
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {places.map(([name, note], i) => (
+            <Card key={i}>
+              <div className="flex items-start gap-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black" style={{ backgroundColor: "#E6F6FF", color: C.confident }}>{i + 1}</span>
+                <div>
+                  <div className="text-sm font-black" style={{ color: C.navy }}>{name}</div>
+                  <div className="mt-0.5 text-xs leading-relaxed" style={{ color: C.muted }}>{note}</div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
 
-        <Card className="sm:col-span-2">
-          <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
-            <Dumbbell size={15} style={{ color: C.confident }} /> Wellbeing — gym, padel, tennis, spa
-          </div>
-          {d.wellbeing.length > 0 ? <TwoCol rows={d.wellbeing} /> :
-            <DesignatedArea icon={Dumbbell} title="Wellbeing partners" body="Gyms, padel and tennis courts, pools and spas at partner rates are added here as agreements are signed." />}
-        </Card>
+/* ------------------------------------------------------------------ */
+
+const PAGES = [
+  ["pack", "Pack", Package],
+  ["practical", "Practical", Wrench],
+  ["country", "Country & culture", Globe2],
+  ["places", "Places to visit", Compass],
+]
+
+export default function CityPacks({ user }) {
+  const s = useStore()
+  const names = Object.keys(s.cities)
+  const myTrip = s.trips.find((t) => t.userId === user?.id && t.end >= new Date().toISOString().slice(0, 10))
+  const [city, setCity] = useState(myTrip?.city && s.cities[myTrip.city] ? myTrip.city : names[0])
+  const [mode, setMode] = useState("visit")
+  const [page, setPage] = useState("pack")
+  const [hotelIdx, setHotelIdx] = useState(null)
+  const [family, setFamily] = useState(Boolean(myTrip?.family))
+  const d = s.cities[city]
+
+  const pdfHref = `#/pack/${encodeURIComponent(city)}/${mode}`
+
+  return (
+    <div className="space-y-5">
+      <SectionTitle sub="One pack per city, two versions: what a visitor needs for a week, and what a colleague needs for a move. Live weather and rates, checked facts with sources, and the partner network as the concierge team signs it.">
+        City packs
+      </SectionTitle>
+
+      <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+        {names.map((n) => (
+          <button
+            key={n}
+            onClick={() => { setCity(n); setHotelIdx(null); setPage("pack") }}
+            className="shrink-0 rounded-full px-4 py-2 text-sm font-bold transition"
+            style={city === n
+              ? { backgroundColor: C.navy, color: "#fff" }
+              : { backgroundColor: "#fff", color: C.muted, border: `1px solid ${C.rule}` }}
+          >
+            {n}
+          </button>
+        ))}
       </div>
 
+      <CityHero name={city} d={d} />
+
+      <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{d.intro}</p>
+
+      {/* Audience + PDF */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="inline-flex rounded-full p-1" style={{ backgroundColor: "#fff", border: `1px solid ${C.rule}` }} role="tablist" aria-label="Pack version">
+          {MODES.map(([k, label, hint]) => (
+            <button key={k} role="tab" aria-selected={mode === k} title={hint} onClick={() => setMode(k)}
+              className="rounded-full px-4 py-1.5 text-sm font-bold transition"
+              style={mode === k ? { backgroundColor: C.navy, color: "#fff" } : { color: C.muted }}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <a href={pdfHref} target="_blank" rel="noreferrer"
+          className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-black text-white transition hover:opacity-90"
+          style={{ backgroundColor: C.confident }}>
+          <FileDown size={15} /> Download {MODES.find(([k]) => k === mode)[1].toLowerCase()} pack (PDF)
+        </a>
+      </div>
+      <p className="-mt-2 text-xs" style={{ color: C.muted }}>{MODES.find(([k]) => k === mode)[2]}</p>
+
+      {/* Pages within the city */}
+      <div className="no-scrollbar flex gap-1 overflow-x-auto border-b" style={{ borderColor: C.rule }}>
+        {PAGES.map(([k, label, Icon]) => (
+          <button key={k} onClick={() => setPage(k)}
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-sm font-bold transition"
+            style={{ color: page === k ? C.navy : C.muted, borderBottom: `3px solid ${page === k ? C.blue : "transparent"}`, marginBottom: "-1px" }}>
+            <Icon size={14} /> {label}
+          </button>
+        ))}
+      </div>
+
+      {page === "pack" && <PackPage city={city} d={d} mode={mode} family={family} setFamily={setFamily} hotelIdx={hotelIdx} setHotelIdx={setHotelIdx} />}
+      {page === "practical" && <PracticalPage city={city} d={d} />}
+      {page === "country" && <CountryPage city={city} d={d} />}
+      {page === "places" && <PlacesPage city={city} d={d} />}
+
       <div className="text-[11px]" style={{ color: C.muted }}>
-        {d.owner} · last updated {d.updatedAt} · Weather: Open-Meteo · Rates: ECB-derived daily reference · Photo: Wikipedia
+        {d.owner} · last updated {d.updatedAt} · Weather: Open-Meteo · Rates: ECB-derived daily reference · Photo: Wikipedia · Facts verified against the linked sources
       </div>
     </div>
   )

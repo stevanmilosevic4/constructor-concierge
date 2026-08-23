@@ -25,6 +25,7 @@ import Groups from "./screens/admin/Groups.jsx"
 import Broadcasts from "./screens/admin/Broadcasts.jsx"
 import People from "./screens/admin/People.jsx"
 import GuestPage from "./screens/guest/GuestPage.jsx"
+import PackPrint from "./screens/PackPrint.jsx"
 
 /* ------------------------------------------------------------------ */
 /*  Help — one tap to the concierge emergency line, from anywhere.     */
@@ -182,5 +183,10 @@ export default function App() {
   if (guestMatch) return <GuestPage id={guestMatch[1]} />
 
   if (!user) return <Login />
+
+  // Printable pack — signed-in only (it carries partner rates and codes).
+  const packMatch = hash.match(/^#\/pack\/([^/]+)\/(visit|relocate)/)
+  if (packMatch) return <PackPrint city={decodeURIComponent(packMatch[1])} mode={packMatch[2]} />
+
   return <Shell user={user} />
 }

@@ -1,11 +1,11 @@
 import React, { useState } from "react"
 import {
-  Plus, Trash2, Tag, Building2, Save, Car, Utensils, Stethoscope, Baby,
-  Dumbbell, Bed, Wallet, ChevronRight,
+  Plus, Trash2, Tag, Building2, Save, Bed, Wallet, ChevronRight,
 } from "lucide-react"
 import { C } from "../../brand.js"
 import { useStore, update } from "../../lib/store.js"
 import { Card, SectionTitle, Btn, Label, inputCls, inputStyle, Pill, Banner } from "../../components/ui.jsx"
+import { PARTNER_SECTIONS, emptyPartnerAreas } from "../../data/packSections.js"
 
 /* The admin edits structured records; the traveller-facing pack renders
    from them — the strategy note's cure for stale documents. Everything
@@ -16,13 +16,14 @@ const OFFER_CATS = ["Stay", "Transfer", "Eat", "Health", "Wellbeing", "Airport",
 const NEAR_CATS = ["Food", "Shop", "Health", "Work", "Move", "Transport", "Service", "Wellbeing"]
 const blankOffer = { name: "", cat: "Stay", offer: "", how: "", code: "" }
 
-function Section({ icon: Icon, title, children, defaultOpen = false }) {
+function Section({ icon: Icon, title, badge, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
     <Card>
       <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
           <Icon size={15} style={{ color: C.confident }} /> {title}
+          {badge && <Pill tone={badge === "Both" ? "neutral" : badge === "Relocating" ? "vip" : "info"}>{badge}</Pill>}
         </div>
         <ChevronRight size={16} style={{ color: C.blue, transform: open ? "rotate(90deg)" : "none", transition: "transform .15s" }} />
       </button>
@@ -97,12 +98,12 @@ export default function CityEditor() {
       cities: {
         ...st.cities,
         [n]: {
+          ...emptyPartnerAreas(),
           tag: "New", country: "", currency: "EUR", currencyName: "", emergency: "112", police: "",
           tz: "Europe/Berlin", lat: null, lon: null, wikiTitle: n, language: "", plugs: "", water: "",
           owner: "Concierge team · review quarterly", updatedAt: new Date().toISOString().slice(0, 10),
           intro: "", transport: [], history: [], funFacts: [], essentials: [],
-          transfers: [], hotels: [], offers: [], eat: [], health: [], family: [], wellbeing: [],
-          wallet: { hotelLocal: "", driver: null, fixedFare: "", insurance: "", embassyNote: "" },
+          practical: {}, relocation: {}, countryProfile: null, places: [],
         },
       },
     }))
@@ -189,17 +190,18 @@ export default function CityEditor() {
         </div>
       </Section>
 
-      {/* Transfers */}
-      <Section icon={Car} title={`Transfer rate card (${d.transfers.length})`}>
-        <p className="mb-3 text-xs" style={{ color: C.muted }}>
-          Fixed point-to-point rates, never metered, billed monthly to the entity. A published price means nobody adjudicates the cost.
-        </p>
-        <TupleEditor rows={d.transfers} cols={["Route", "Fixed price", "Note"]} addLabel="Add route"
-          onChange={(rows) => patch({ transfers: rows })} />
-      </Section>
+      {/* Partner sections — one per registry entry, tagged by which pack they feed */}
+      {PARTNER_SECTIONS.map((def) => (
+        <Section key={def.key} icon={def.icon} title={`${def.title} (${(d[def.key] || []).length})`}
+          badge={def.audience === "both" ? "Both" : def.audience === "relocate" ? "Relocating" : "Visiting"}>
+          <p className="mb-3 text-xs" style={{ color: C.muted }}>{def.empty}</p>
+          <TupleEditor rows={d[def.key] || []} cols={def.cols} addLabel="Add"
+            onChange={(rows) => patch({ [def.key]: rows })} />
+        </Section>
+      ))}
 
       {/* Hotels */}
-      <Section icon={Bed} title={`Accommodation (${d.hotels.length})`}>
+      <Section icon={Bed} title={`Accommodation (${d.hotels.length})`} badge="Both">
         <div className="space-y-2">
           {d.hotels.map((h, i) => (
             <div key={i} className="flex items-start justify-between gap-3 rounded-lg p-3" style={{ backgroundColor: C.paper }}>
@@ -216,20 +218,6 @@ export default function CityEditor() {
           ))}
         </div>
         <HotelForm onAdd={(h) => patch({ hotels: [...d.hotels, h] })} />
-      </Section>
-
-      {/* Simple partner lists */}
-      <Section icon={Utensils} title={`Eating & hosting (${d.eat.length})`}>
-        <TupleEditor rows={d.eat} cols={["Place / use case", "Note"]} onChange={(rows) => patch({ eat: rows })} />
-      </Section>
-      <Section icon={Stethoscope} title={`Health partners (${d.health.length})`}>
-        <TupleEditor rows={d.health} cols={["Provider", "Arrangement"]} onChange={(rows) => patch({ health: rows })} />
-      </Section>
-      <Section icon={Baby} title={`Family layer (${d.family.length})`}>
-        <TupleEditor rows={d.family} cols={["Institution / service", "Contact & waiting-time note"]} onChange={(rows) => patch({ family: rows })} />
-      </Section>
-      <Section icon={Dumbbell} title={`Wellbeing (${d.wellbeing.length})`}>
-        <TupleEditor rows={d.wellbeing} cols={["Venue", "Arrangement"]} onChange={(rows) => patch({ wellbeing: rows })} />
       </Section>
 
       {/* Wallet */}
