@@ -10,8 +10,8 @@ Guidance app for Constructor Group's 2–3-person concierge team serving ~1,000
 employees. The one rule everything enforces: **the concierge team curates,
 informs and routes — it never approves and never books.** Every request flow
 ends in a self-service answer, a pre-filled email to the actual decision-maker
-(line manager → T&E Officer → C-level, per the Global T&E Policy v1 of
-4 Sep 2025), or a routed escalation (HR, Finance, Mobility). Approval gates
+(line manager → T&E Officer → C-level = oz@ cc bojana@ for every entity,
+per the Global T&E Policy v1 of 4 Sep 2025), or a routed escalation (HR, Finance, Mobility). Approval gates
 (business class, rental car, late booking, weekend nights, 2-weeks/60-days
 rules) are encoded from the policy matrix in `src/lib/policy.js`.
 
@@ -133,6 +133,15 @@ HTTPS enforced; policy engine with entity-specific approver emails.
 - Facts are not editable in the admin panel — corrections are code edits in
   data/facts.js (one line, one source). An admin "suggest a correction" flow
   would be the natural next step.
+- Rule (23 Aug 2026): anything with a figure that changes — prices, fares,
+  fees, thresholds — is never quoted; it is an `L(text, src, liveLabel)` item
+  rendered as a prominent link to the live page (42 of 203 facts). Only
+  stable facts (addresses, phone numbers, rules, deadlines) are plain `F()`.
+- Photos: Wikipedia lead image per article (`useCityImage`; `de:` prefix for
+  German-only articles; SVG diagrams and disambiguation pages rejected) on
+  country/culture blocks, places to visit, and in the PDF.
+- Final approval for ALL entities = oz@constructor.org cc bojana@constructor.org
+  (tt@constructor.university removed 23 Aug 2026).
 - PDF = browser print; headless generation/emailing of packs needs a backend.
 - ALS Hauss woff2 files pending licence; drop into `public/fonts/`.
 - Old `-v1` localStorage keys are orphaned (harmless).
