@@ -279,6 +279,14 @@ export function includesWeekendNight(start, end) {
 export const fmtDate = (s) =>
   !s ? "" : new Date(s + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
 
+/* Arrival deadline: "anytime" or "YYYY-MM-DDTHH:MM" (local time at destination). */
+export const fmtDeadline = (v) => {
+  if (!v) return ""
+  if (v === "anytime") return "Anytime — lowest logical fare decides"
+  const [d, t] = v.split("T")
+  return `${t ? `by ${t} on ` : ""}${fmtDate(d)} (local time at destination)`
+}
+
 /* ------------------------------------------------------------------ */
 /*  evaluateTrip — the gate check behind the trip planner              */
 /* ------------------------------------------------------------------ */
@@ -399,9 +407,12 @@ export const REQUEST_TYPES = [
     label: "Book a flight",
     blurb: "Any flight, any destination — including a leg of a longer trip.",
     questions: [
-      { id: "departure", label: "When do you fly out?", type: "date", required: true },
-      { id: "return", label: "When do you come back?", type: "date" },
+      { id: "origin", label: "Where are you flying from?", type: "text", placeholder: "City or airport — e.g. Bremen (BRE) or Hamburg (HAM)", required: true },
       { id: "destination", label: "Where to?", type: "text", placeholder: "City or airport", required: true },
+      { id: "departure", label: "When do you fly out?", type: "date", required: true },
+      { id: "landBy", label: "By when do you need to land?", type: "deadline", required: true,
+        hint: "A hard arrival time lets the booking partner pick the right flight first time. 'Anytime' means the lowest logical fare decides." },
+      { id: "return", label: "When do you come back?", type: "date" },
       { id: "purpose", label: "What is the business reason?", type: "text", placeholder: "One line is enough", required: true },
       { id: "cabin", label: "What cabin are you asking for?", type: "choice", required: true,
         options: [
@@ -905,7 +916,8 @@ export function composeEmail(type, answers, outcome, user) {
   const to = outcome.sendTo?.to || (outcome.approvals[0]?.email ? [outcome.approvals[0].email] : [])
   const cc = outcome.sendTo?.cc || []
   const dest = answers.destination || answers.what || ""
-  const subject = `Travel request — ${type.label}${dest ? ` — ${dest}` : ""}${answers.departure ? ` — ${fmtDate(answers.departure)}` : ""}`
+  const route = answers.origin ? `${answers.origin} → ${dest}` : dest
+  const subject = `Travel request — ${type.label}${route ? ` — ${route}` : ""}${answers.departure ? ` — ${fmtDate(answers.departure)}` : ""}`
 
   const lines = [
     `Dear all,`,
@@ -913,8 +925,10 @@ export function composeEmail(type, answers, outcome, user) {
     `I would like to request the following, in line with the Global Travel & Expense Policy.`,
     ``,
     `Traveller:      ${user.name} (${user.level}, ${user.entity})`,
+    answers.origin ? `From:           ${answers.origin}` : null,
     dest ? `Destination:    ${dest}` : null,
     answers.departure ? `Departure:      ${fmtDate(answers.departure)}` : null,
+    answers.landBy ? `Must land:      ${fmtDeadline(answers.landBy)}` : null,
     answers.return ? `Return:         ${fmtDate(answers.return)}` : null,
     answers.purpose ? `Business reason: ${answers.purpose}` : null,
     answers.cabin ? `Cabin:          ${answers.cabin}` : null,

@@ -20,7 +20,35 @@ const STATUS_META = {
 
 /* ------------------------------------------------------------------ */
 
-function QuestionField({ q, value, onChange }) {
+function QuestionField({ q, value, onChange, answers }) {
+  if (q.type === "deadline") {
+    const any = value === "anytime"
+    const specific = value && value !== "anytime" ? value : ""
+    const [d, t] = specific.split("T")
+    const date = d || answers?.departure || ""
+    const set = (nd, nt) => onChange(`${nd || ""}T${nt || ""}`)
+    return (
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <button onClick={() => onChange("anytime")} className="flex-1 rounded-lg px-3 py-2.5 text-sm font-bold transition"
+            style={any ? { backgroundColor: C.confident, color: "#fff", border: `1px solid ${C.confident}` } : { backgroundColor: "#fff", color: C.muted, border: `1px solid ${C.rule}` }}>
+            Anytime
+          </button>
+          <button onClick={() => set(date, t || "")} className="flex-1 rounded-lg px-3 py-2.5 text-sm font-bold transition"
+            style={value && !any ? { backgroundColor: C.confident, color: "#fff", border: `1px solid ${C.confident}` } : { backgroundColor: "#fff", color: C.muted, border: `1px solid ${C.rule}` }}>
+            By a specific time
+          </button>
+        </div>
+        {value && !any && (
+          <div className="flex gap-2">
+            <input type="date" className={inputCls} style={inputStyle} value={date} onChange={(e) => set(e.target.value, t)} aria-label="Landing date" />
+            <input type="time" className={inputCls} style={inputStyle} value={t || ""} onChange={(e) => set(date, e.target.value)} aria-label="Latest landing time" />
+          </div>
+        )}
+        {q.hint && <div className="text-xs" style={{ color: C.muted }}>{q.hint}</div>}
+      </div>
+    )
+  }
   if (q.type === "date")
     return <input type="date" className={inputCls} style={inputStyle} value={value || ""} onChange={(e) => onChange(e.target.value)} />
   if (q.type === "text")
@@ -256,7 +284,8 @@ export default function Request({ user }) {
   if (outcome) return <Outcome type={type} answers={answers} outcome={outcome} user={user} onBack={reset} />
 
   if (type) {
-    const missing = type.questions.filter((q) => q.required && !answers[q.id])
+    const incomplete = (q, v) => !v || (q.type === "deadline" && v !== "anytime" && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(v))
+    const missing = type.questions.filter((q) => q.required && incomplete(q, answers[q.id]))
     return (
       <div className="mx-auto max-w-xl space-y-4">
         <button onClick={reset} className="flex items-center gap-1.5 text-sm font-bold" style={{ color: C.confident }}>
@@ -269,7 +298,7 @@ export default function Request({ user }) {
               <div key={q.id}>
                 <Label>{q.label}{q.required && <span style={{ color: C.red }}> *</span>}</Label>
                 {q.hint && <p className="mb-1.5 text-xs" style={{ color: C.muted }}>{q.hint}</p>}
-                <QuestionField q={q} value={answers[q.id]} onChange={(v) => setAnswers((a) => ({ ...a, [q.id]: v }))} />
+                <QuestionField q={q} value={answers[q.id]} answers={answers} onChange={(v) => setAnswers((a) => ({ ...a, [q.id]: v }))} />
               </div>
             ))}
           </div>
