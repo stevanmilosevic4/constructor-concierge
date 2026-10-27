@@ -43,7 +43,7 @@ All writes go through `update()`; `useStore()` subscribes. Shapes:
   managerEmail?, assistsEmail? }` · seeded with only the concierge account
 - **allowedDomains** — `string[]`
 - **cities** — map keyed by name (Bremen, Istanbul, Belgrade, "São Paulo",
-  Schaffhausen). Facts: `tag, country, currency, currencyName, emergency,
+  Schaffhausen, Singapore, Sofia). Facts: `tag, country, currency, currencyName, emergency,
   police, tz, lat, lon, wikiTitle, language, plugs, water, owner, updatedAt,
   intro, transport[[label,url]], history[], funFacts[]`. Attached from code
   (always win over saved copies): `countryProfile{ geography[], history[],
@@ -69,6 +69,17 @@ All writes go through `update()`; `useStore()` subscribes. Shapes:
   travellers[{ name, flight, room, driver }] }` · exports a WhatsApp brief
 - **broadcasts** — `{ id, city, created, text }` (pack updates, 30-day window)
 - **broadcastReads** — `{ [userId]: { [broadcastId]: true } }`
+- **citiesSeedV** — seed-content version stamp (`SEED_VERSION` in cities.js;
+  bump it on every shipped content change). On mismatch, sections the new
+  seed FILLS replace the device's stored copy; sections the seed leaves
+  empty keep per-device admin entries. Same version → device edits win.
+- **Company per-diem rates** live in `src/data/perdiem.js` (country ×
+  entity incl. Constructor Capital, null = "Rate pending"); shown in Tools,
+  as a strip on each city pack, and as a PDF row. Statutory sources stay
+  linked. First signed partner content (Oct 2026) is seeded in cities.js
+  for Bremen / Belgrade / Istanbul with venue URLs verified per venue;
+  `Linkify` renders tel:/mailto:/URLs from plain-text notes, `DiscountNote`
+  renders "15% discount — …" as a badge; hotels have a `url` field.
 
 ## Routes / pages
 
@@ -115,7 +126,14 @@ Global: red Help button (concierge emergency line) on all non-admin screens.
 Hauss (fallback Arial — font files not yet in `public/fonts/`); deployed with
 HTTPS enforced; policy engine with entity-specific approver emails.
 
-**TODO / known gaps:**
+**TODO / known gaps (updated 27 Oct 2026):**
+- Al Pappagallo Bremen website (alpappagallo.de per Michelin) unreachable
+  when checked — TODO in cities.js.
+- Istanbul partner hotel: "Istanbul Marriott Hotel Levent" doesn't exist on
+  marriott.com; seeded as Delta Hotels by Marriott Istanbul Levent (TODO:
+  confirm vs Sheraton Istanbul Levent with the concierge team).
+- Socrat Transfer: Bojana's email domain was wrong — real domain is
+  socrat-roadstar.rs (hyphenated); phone from the partner's own site.
 - **No trip-creation UI** — `trips` seeds empty and nothing writes it yet, so
   My trip / Wallet / Expenses show empty states until BCD data or a manual
   form lands. (Highest-impact gap.)
