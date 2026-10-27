@@ -244,7 +244,7 @@ export default function CityEditor() {
 }
 
 function HotelForm({ onAdd }) {
-  const blank = { name: "", area: "", address: "", addressLocal: "", note: "", near: [] }
+  const blank = { name: "", area: "", address: "", addressLocal: "", note: "", url: "", near: [] }
   const [h, setH] = useState(blank)
   const set = (k) => (e) => setH({ ...h, [k]: e.target.value })
   return (
@@ -254,6 +254,7 @@ function HotelForm({ onAdd }) {
       <div><Label>Address</Label><input className={inputCls} style={inputStyle} value={h.address} onChange={set("address")} /></div>
       <div><Label>Address in local script</Label><input className={inputCls} style={inputStyle} placeholder="Shown to drivers on the offline wallet" value={h.addressLocal} onChange={set("addressLocal")} /></div>
       <div className="sm:col-span-2"><Label>Note</Label><input className={inputCls} style={inputStyle} placeholder="Rate arrangement, who it suits" value={h.note} onChange={set("note")} /></div>
+      <div className="sm:col-span-2"><Label>Website</Label><input className={inputCls} style={inputStyle} placeholder="https://…" value={h.url} onChange={set("url")} /></div>
       <div className="flex items-end">
         <Btn disabled={!h.name} onClick={() => { onAdd(h); setH(blank) }}><Save size={14} /> Add accommodation</Btn>
       </div>

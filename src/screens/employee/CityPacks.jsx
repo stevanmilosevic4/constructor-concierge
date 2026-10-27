@@ -9,7 +9,8 @@ import { useStore } from "../../lib/store.js"
 import { RATE_CURRENCIES } from "../../data/cities.js"
 import { MODES, PARTNER_SECTIONS, PRACTICAL_FACTS, RELOCATION_FACTS, forAudience } from "../../data/packSections.js"
 import { useWeather, useRates, useCityImage, useLocalTime, convert, fmtRate } from "../../lib/live.js"
-import { Card, Pill, SectionTitle, Label, Banner, DesignatedArea } from "../../components/ui.jsx"
+import { perDiemFor } from "../../data/perdiem.js"
+import { Card, Pill, SectionTitle, Label, Banner, DesignatedArea, Linkify, DiscountNote } from "../../components/ui.jsx"
 
 const NEAR_ICON = { Food: Utensils, Shop: MapPin, Health: Stethoscope, Work: Info, Move: Dumbbell, Transport: Car, Service: Info, Wellbeing: Dumbbell }
 
@@ -19,7 +20,7 @@ function TwoCol({ rows }) {
       {rows.map((r, i) => (
         <div key={i} className="flex items-baseline justify-between gap-3 text-sm">
           <span className="font-semibold" style={{ color: C.ink }}>{r[0]}</span>
-          <span className="text-right text-xs" style={{ color: C.muted }}>{r[1]}</span>
+          <Linkify text={r[1]} className="text-right text-xs" style={{ color: C.muted }} />
         </div>
       ))}
     </div>
@@ -225,7 +226,7 @@ function PartnerCard({ def, rows, city }) {
                 <span className="text-sm font-semibold" style={{ color: C.ink }}>{r[0]}</span>
                 {tuple3 && <span className="shrink-0 text-sm font-black" style={{ color: C.confident }}>{r[1]}</span>}
               </div>
-              <div className="text-[11px]" style={{ color: C.muted }}>{tuple3 ? r[2] : r[1]}</div>
+              <div className="text-[11px]" style={{ color: C.muted }}><DiscountNote text={tuple3 ? r[2] : r[1]} /></div>
             </div>
           ))}
         </div>
@@ -264,7 +265,7 @@ function WikiThumb({ title, alt }) {
 /*  Sub-pages                                                          */
 /* ------------------------------------------------------------------ */
 
-function PackPage({ city, d, mode, family, setFamily, hotelIdx, setHotelIdx }) {
+function PackPage({ city, d, mode, family, setFamily, hotelIdx, setHotelIdx, goTab }) {
   const sections = forAudience(PARTNER_SECTIONS, mode)
     .filter((s) => s.key !== "transfers")
     .filter((s) => s.key !== "family" || mode === "relocate" || family)
@@ -274,6 +275,23 @@ function PackPage({ city, d, mode, family, setFamily, hotelIdx, setHotelIdx }) {
         <WeatherCard d={d} />
         <CurrencyCard d={d} />
       </div>
+
+      {(() => {
+        const pd = perDiemFor(d.country)
+        if (!pd.known) return null
+        return (
+          <button onClick={() => goTab && goTab("tools")} className="flex w-full items-center justify-between rounded-xl2 px-4 py-3 text-left transition hover:shadow-card"
+            style={{ backgroundColor: "#fff", border: `1px solid ${C.rule}` }}>
+            <span className="text-sm" style={{ color: C.ink }}>
+              <b style={{ color: C.navy }}>Per diem in {d.country}:</b>{" "}
+              {pd.rate != null
+                ? <b style={{ color: "#00654C" }}>{pd.rate} {pd.currency}/day</b>
+                : <span style={{ color: C.muted }}>rate pending — contact concierge@constructor.org</span>}
+            </span>
+            <span className="shrink-0 text-xs font-bold" style={{ color: C.confident }}>Per diem lookup →</span>
+          </button>
+        )
+      })()}
 
       {mode === "relocate" && (
         <Card tone="vip">
@@ -304,7 +322,7 @@ function PackPage({ city, d, mode, family, setFamily, hotelIdx, setHotelIdx }) {
             <div className="flex items-start gap-2.5"><Languages size={14} className="mt-0.5 shrink-0" style={{ color: C.confident }} /><span style={{ color: C.ink }}>{d.language}</span></div>
             <div className="flex items-start gap-2.5"><Plug size={14} className="mt-0.5 shrink-0" style={{ color: C.confident }} /><span style={{ color: C.ink }}>{d.plugs}</span></div>
             <div className="flex items-start gap-2.5"><GlassWater size={14} className="mt-0.5 shrink-0" style={{ color: C.confident }} /><span style={{ color: C.ink }}>{d.water}</span></div>
-            <div className="flex items-start gap-2.5"><Siren size={14} className="mt-0.5 shrink-0" style={{ color: C.red }} /><span style={{ color: C.ink }}>Emergency {d.emergency} · Police {d.police}</span></div>
+            <div className="flex items-start gap-2.5"><Siren size={14} className="mt-0.5 shrink-0" style={{ color: C.red }} /><span style={{ color: C.ink }}>Emergency {d.emergency}{d.police ? ` · Police ${d.police}` : ""}</span></div>
           </div>
           <div className="mt-3 border-t pt-3" style={{ borderColor: C.rule }}>
             <TwoCol rows={d.essentials || []} />
@@ -333,7 +351,7 @@ function PackPage({ city, d, mode, family, setFamily, hotelIdx, setHotelIdx }) {
                         <span className="text-sm font-semibold" style={{ color: C.ink }}>{t[0]}</span>
                         <span className="shrink-0 text-sm font-black" style={{ color: C.confident }}>{t[1]}</span>
                       </div>
-                      <div className="text-[11px]" style={{ color: C.muted }}>{t[2]}</div>
+                      <div className="text-[11px]" style={{ color: C.muted }}><Linkify text={t[2]} /></div>
                     </div>
                   ))}
                 </div>
@@ -359,7 +377,8 @@ function PackPage({ city, d, mode, family, setFamily, hotelIdx, setHotelIdx }) {
                       <Bed size={15} style={{ color: C.confident }} /> {h.name}
                     </div>
                     <div className="mt-0.5 text-xs" style={{ color: C.muted }}>{[h.area, h.address].filter(Boolean).join(" · ")}</div>
-                    {h.note && <div className="mt-1 text-xs leading-relaxed" style={{ color: C.muted }}>{h.note}</div>}
+                    {h.note && <div className="mt-1 text-xs leading-relaxed" style={{ color: C.muted }}><Linkify text={h.note} /></div>}
+                    {h.url && <a href={h.url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="mt-1 inline-flex items-center gap-1 text-xs font-bold" style={{ color: C.confident }}>Website <ExternalLink size={11} /></a>}
                   </div>
                   <ChevronRight size={16} className="mt-1 shrink-0" style={{ color: C.blue, transform: hotelIdx === i ? "rotate(90deg)" : "none" }} />
                 </div>
@@ -523,7 +542,7 @@ const PAGES = [
   ["places", "Places to visit", Compass],
 ]
 
-export default function CityPacks({ user }) {
+export default function CityPacks({ user, goTab }) {
   const s = useStore()
   const names = Object.keys(s.cities)
   const myTrip = s.trips.find((t) => t.userId === user?.id && t.end >= new Date().toISOString().slice(0, 10))
@@ -591,7 +610,7 @@ export default function CityPacks({ user }) {
         ))}
       </div>
 
-      {page === "pack" && <PackPage city={city} d={d} mode={mode} family={family} setFamily={setFamily} hotelIdx={hotelIdx} setHotelIdx={setHotelIdx} />}
+      {page === "pack" && <PackPage city={city} d={d} mode={mode} family={family} setFamily={setFamily} hotelIdx={hotelIdx} setHotelIdx={setHotelIdx} goTab={goTab} />}
       {page === "practical" && <PracticalPage city={city} d={d} />}
       {page === "country" && <CountryPage city={city} d={d} />}
       {page === "places" && <PlacesPage city={city} d={d} />}

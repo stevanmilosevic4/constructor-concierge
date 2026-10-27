@@ -182,6 +182,47 @@ export function DesignatedArea({ icon: Icon, title, body }) {
       <p className="text-xs leading-relaxed" style={{ color: C.muted }}>
         {body || "The concierge team is arranging partners for this — real names, rates and contacts appear here the moment they're signed."}
       </p>
+      <p className="text-xs font-semibold" style={{ color: C.muted }}>
+        Recommendations coming soon — contact{" "}
+        <a href="mailto:concierge@constructor.org" style={{ color: C.confident }}>concierge@constructor.org</a>
+      </p>
     </div>
+  )
+}
+
+/* Renders a plain-text note with phones, emails and URLs clickable:
+   "+49 172 4227706" → tel:, "office@x.rs" → mailto:, "https://…" → website.
+   Used by the pack and the admin editor, so partner contacts entered as
+   text become one-tap actions without any special syntax. */
+export function Linkify({ text, className = "", style }) {
+  if (!text) return null
+  const parts = String(text).split(/(\+?[0-9][0-9 -]{6,}[0-9]|[\w.+-]+@[\w-]+\.[\w.]+|https?:\/\/[^\s,;]+)/g)
+  return (
+    <span className={className} style={style}>
+      {parts.map((part, i) => {
+        if (/^https?:\/\//.test(part)) {
+          return <a key={i} href={part} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 font-bold" style={{ color: C.confident }}>website ↗</a>
+        }
+        if (/^[\w.+-]+@[\w-]+\.[\w.]+$/.test(part)) {
+          return <a key={i} href={`mailto:${part}`} className="font-bold" style={{ color: C.confident }}>{part}</a>
+        }
+        if (/^\+?[0-9][0-9 -]{6,}[0-9]$/.test(part) && part.replace(/\D/g, "").length >= 8) {
+          return <a key={i} href={`tel:${part.replace(/[^+0-9]/g, "")}`} className="font-bold whitespace-nowrap" style={{ color: C.confident }}>{part}</a>
+        }
+        return part
+      })}
+    </span>
+  )
+}
+
+/* "20% discount — …" rendered with the discount pulled out as a badge. */
+export function DiscountNote({ text, className = "" }) {
+  const m = /^\s*(\d{1,2}\s?%(?:\s*discount)?)\s*[—–:-]?\s*(.*)$/s.exec(text || "")
+  if (!m) return <Linkify text={text} className={className} />
+  return (
+    <span className={className}>
+      <Pill tone="good">{m[1].trim()}</Pill>{" "}
+      <Linkify text={m[2]} />
+    </span>
   )
 }

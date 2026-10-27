@@ -7,7 +7,7 @@
    ===================================================================== */
 
 import { useSyncExternalStore } from "react"
-import { SEED_CITIES } from "../data/cities.js"
+import { SEED_CITIES, SEED_VERSION } from "../data/cities.js"
 import { emptyPartnerAreas } from "../data/packSections.js"
 
 const KEY = "constructor-concierge-v2"
@@ -25,6 +25,7 @@ export const SEED_DOMAINS = ["constructor.university", "constructor.org", "const
 function seed() {
   return {
     session: null, // { userId }
+    citiesSeedV: SEED_VERSION,
     people: structuredClone(SEED_PEOPLE),
     allowedDomains: [...SEED_DOMAINS],
     cities: structuredClone(SEED_CITIES),
@@ -72,17 +73,31 @@ function seed() {
    (facts, country profile, places, history) always come from code, so a
    corrected fact reaches every device on the next load. New partner
    slots added in an update appear as empty lists. */
-function mergeCities(seedCities, savedCities) {
+function mergeCities(seedCities, savedCities, sameSeedV) {
   if (!savedCities) return seedCities
   const out = {}
   for (const [name, saved] of Object.entries(savedCities)) {
     const seed = seedCities[name]
-    out[name] = seed
-      ? { ...emptyPartnerAreas(), ...seed, ...saved,
-          practical: seed.practical, relocation: seed.relocation,
-          countryProfile: seed.countryProfile, places: seed.places,
-          history: seed.history, funFacts: seed.funFacts, transport: seed.transport }
-      : { ...emptyPartnerAreas(), ...saved }
+    if (!seed) { out[name] = { ...emptyPartnerAreas(), ...saved }; continue }
+    const merged = { ...emptyPartnerAreas(), ...seed, ...saved,
+      practical: seed.practical, relocation: seed.relocation,
+      countryProfile: seed.countryProfile, places: seed.places,
+      history: seed.history, funFacts: seed.funFacts, transport: seed.transport }
+    // Partner sections. Same seed version: what this device's admin typed
+    // wins (their in-session edits persist), with empty lists falling back
+    // to seed. New seed version: the shipped content is authoritative for
+    // every section it fills — that is how a signed partner reaches devices
+    // that stored an older copy; sections the seed leaves empty keep
+    // whatever the device's admin entered.
+    for (const k of Object.keys(emptyPartnerAreas())) {
+      if (k === "wallet") continue
+      const sv = saved[k]
+      const seedHas = Array.isArray(seed[k]) && seed[k].length > 0
+      const savedHas = Array.isArray(sv) && sv.length > 0
+      if (!sameSeedV && seedHas) merged[k] = seed[k]
+      else if (!savedHas) merged[k] = seed[k] || []
+    }
+    out[name] = merged
   }
   for (const [name, seed] of Object.entries(seedCities)) if (!out[name]) out[name] = seed
   return out
@@ -100,7 +115,8 @@ function load() {
       // Shallow merge so new seed keys appear after an app update.
       return {
         ...s, ...parsed,
-        cities: mergeCities(s.cities, parsed.cities),
+        cities: mergeCities(s.cities, parsed.cities, parsed.citiesSeedV === SEED_VERSION),
+        citiesSeedV: SEED_VERSION,
         people: parsed.people || s.people,
         allowedDomains: parsed.allowedDomains || s.allowedDomains,
       }

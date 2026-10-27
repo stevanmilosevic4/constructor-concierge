@@ -20,6 +20,10 @@ import { emptyPartnerAreas } from "./packSections.js"
 import { COUNTRIES, PLACES } from "./countries.js"
 import { CITY_FACTS } from "./facts.js"
 
+/* Bump on every shipped content change — devices replace their stored copy
+   of the sections the seed fills when this changes. */
+export const SEED_VERSION = "2026-10-27"
+
 export const NEAR_CATS = ["Food", "Shop", "Health", "Work", "Move", "Transport", "Service", "Wellbeing"]
 
 /* Partner slots (all empty until signed) come from the section registry,
@@ -27,6 +31,33 @@ export const NEAR_CATS = ["Food", "Shop", "Health", "Work", "Move", "Transport",
 export const SEED_CITIES = {
   Bremen: {
     ...emptyPartnerAreas(),
+    /* Signed partner content — provided by the concierge team (Bojana),
+       October 2026. Venue names and URLs verified against each venue's
+       own site on 15 Oct 2026. */
+    transfers: [
+      ["Partner transfer — Turan", "", "+49 172 4227706 — call or WhatsApp to book"],
+    ],
+    hotels: [
+      { name: "ATLANTIC Grand Hotel Bremen", area: "Old town", address: "Bredenstraße 2, 28195 Bremen",
+        note: "Partner rate: €145/night single · €176/night double, breakfast included.",
+        url: "https://www.atlantic-hotels.de/en/grand-hotel-bremen-old-town/", near: [] },
+      { name: "ATLANTIC Hotel Vegesack", area: "Vegesack", address: "Sagerstraße 20, 28757 Bremen",
+        note: "Partner rate: €108/night single · €128/night double, breakfast included.",
+        url: "https://www.atlantic-hotels.de/en/hotel-vegesack/", near: [] },
+      { name: "Courtyard by Marriott Bremen", area: "By the main station", address: "Theodor-Heuss-Allee 2, 28215 Bremen",
+        note: "20% discount on daily rates. (The only full-service Marriott-brand hotel in Bremen — 'Marriott Bremen' on marriott.com is this Courtyard.)",
+        url: "https://www.marriott.com/en-us/hotels/brecy-courtyard-bremen/overview/", near: [] },
+    ],
+    servicedApartments: [
+      ["Serviced apartments, Bremen", "Please contact Britta Huneke, +49 176 24414556"],
+    ],
+    eat: [
+      // TODO(concierge): Al Pappagallo's own site (alpappagallo.de, per the Michelin Guide)
+      // would not load when checked on 15 Oct 2026 — add the URL once it is reachable.
+      ["Al Pappagallo", "Italian, Außer der Schleifmühle 73 — listed in the Michelin Guide. Website pending."],
+      ["Gallo Nero", "Italian, Heimlichenstraße 1, old town. https://gallonerobremen.eatbu.com/"],
+      ["Loui & Jules im Loretta", "At the Vegesack harbour, Alte Hafenstraße 29 — the house by the water for Vegesack stays. https://www.loui-jules.de/"],
+    ],
     tag: "Campus city",
     country: "Germany",
     currency: "EUR",
@@ -68,6 +99,17 @@ export const SEED_CITIES = {
 
   Istanbul: {
     ...emptyPartnerAreas(),
+    /* Signed partner content — provided by the concierge team (Bojana),
+       October 2026. */
+    hotels: [
+      // TODO(concierge): confirm the property. "Istanbul Marriott Hotel Levent" does not
+      // exist on marriott.com — the Marriott-family hotels in Levent are Delta Hotels by
+      // Marriott Istanbul Levent (linked below) and Sheraton Istanbul Levent. The Delta is
+      // the one commonly called "Marriott Levent"; swap the entry if the deal is with the Sheraton.
+      { name: "Delta Hotels by Marriott Istanbul Levent", area: "Levent / Şişli", address: "Esentepe Mah. Büyükdere Cad. No 187, 34394 İstanbul",
+        note: "Partner rate: €120/night with breakfast.",
+        url: "https://www.marriott.com/en-us/hotels/istld-delta-hotels-istanbul-levent/overview/", near: [] },
+    ],
     tag: "High volume",
     country: "Türkiye",
     currency: "TRY",
@@ -110,6 +152,31 @@ export const SEED_CITIES = {
 
   Belgrade: {
     ...emptyPartnerAreas(),
+    /* Signed partner content — provided by the concierge team (Bojana),
+       October 2026. Venue names and URLs verified against each venue's
+       own site on 15 Oct 2026. NOTE: the transfer partner's real domain is
+       socrat-roadstar.rs (hyphenated) — the unhyphenated spelling does not
+       exist; phone from the partner's own site. */
+    transfers: [
+      ["Office ↔ Nikola Tesla Airport — Socrat Road Star", "€35 fixed", "office@socrat-roadstar.rs · +381 66 635 00 00, answered 24/7 · https://socrat-roadstar.rs/"],
+    ],
+    hotels: [
+      { name: "Garni Hotel Marshal ★★★★", area: "Stari grad", address: "Maršala Birjuzova 5, 11000 Beograd",
+        note: "Partner rate: €114/night.", url: "https://hotelmarshal.rs/", near: [] },
+      { name: "Hotel Centar No1 ★★★★", area: "City centre, by Terazije", address: "Kolarčeva 1, 11000 Beograd",
+        note: "Partner rate: €150/night.", url: "https://www.hotelcentar-no1.com/", near: [] },
+    ],
+    eat: [
+      ["Wok Republic", "20% discount — discount cards can be picked up at the office. Three locations (Dorćol, Novi Beograd, Big Fashion). https://www.wok-republic.rs/rs/"],
+      ["Angry Monk", "15% discount at the restaurant — Asian fusion, Uzun Mirkova 11. https://angrymonk.rs"],
+      ["Klub književnika", "10% discount — the historic Writers' Club, Francuska 7, since 1946. https://klubknjizevnika.rs"],
+      ["Iva New Balkan Cuisine", "15% discount — Svetog Save 14, Vračar. https://newbalkancuisine.com/iva/"],
+      ["Dragoljub New Balkan Cuisine", "15% discount — Svetogorska 17, next to Atelje 212. https://newbalkancuisine.com/dragoljub/"],
+      ["Istok", "15% discount — Vietnamese and pan-Asian, Gospodar Jovanova 50, Dorćol. https://istokrestoran.com"],
+    ],
+    wellbeing: [
+      ["ZONE Private Health Club", "10% discount on daily visits — gym, pool and spa, Kneza Miloša 46. https://zonephc.rs/"],
+    ],
     tag: "Regional hub",
     country: "Serbia",
     currency: "RSD",
@@ -229,6 +296,88 @@ export const SEED_CITIES = {
       ["Getting around", "Rail first — the SBB Half Fare Card pays for itself quickly"],
       ["Per diems", "Cantonal rates apply, not the global figure"],
       ["Shops", "Close early Saturday, closed Sunday"],
+    ],
+  },
+
+  Singapore: {
+    ...emptyPartnerAreas(),
+    tag: "New",
+    country: "Singapore",
+    currency: "SGD",
+    currencyName: "Singapore dollar",
+    emergency: "995",
+    police: "999",
+    tz: "Asia/Singapore",
+    lat: 1.352, lon: 103.820,
+    wikiTitle: "Singapore",
+    language: "English is the working language — Malay, Mandarin and Tamil are co-official",
+    plugs: "Type G (British) · 230 V",
+    water: "Tap water is safe to drink",
+    owner: "Concierge team · review quarterly",
+    updatedAt: "2026-10-15",
+    intro: "A city, an island and a state at once — and the easiest long-haul destination the group flies to: English-speaking, precise, and compact. Changi (SIN) is consistently ranked the world's best airport; the MRT runs from it straight into town. Note the strict public-order rules — fines are real.",
+    transport: [
+      ["MRT & buses — SimplyGo (contactless bank cards work at the gates)", "https://www.simplygo.com.sg"],
+      ["Land Transport Authority — network map & fares", "https://www.lta.gov.sg"],
+      ["Changi Airport (SIN)", "https://www.changiairport.com"],
+    ],
+    essentials: [
+      ["Getting around", "MRT + a contactless bank card — no ticket needed"],
+      ["Tipping", "Not expected — a 10% service charge is already on most bills"],
+      ["Rules", "No eating or drinking on the MRT; jaywalking and littering are fined"],
+      ["Climate", "30 °C and humid all year — meetings are indoors, carry a layer for the aircon"],
+    ],
+    history: [
+      "A trading settlement called Temasek stood here from at least the 14th century, but modern Singapore dates from 1819, when Stamford Raffles of the East India Company established a free port at the mouth of the Singapore River. Positioned on the Strait of Malacca — the shortest sea route between India and China — it grew explosively as a British crown colony.",
+      "The fall of Singapore to Japan in February 1942 was Britain's greatest military defeat and marked the end of the colonial era's certainties. After the war came self-government, a brief merger with Malaysia, and on 9 August 1965 an independence nobody had sought — a tiny island with no hinterland and no resources.",
+      "Under Lee Kuan Yew the improbable state became the textbook case of development: from entrepôt to manufacturing to one of the world's leading financial, logistics and technology hubs, consistently among the highest GDP per capita anywhere. The formula — openness to trade, rule of law, long-term planning — is taught in every policy school.",
+    ],
+    funFacts: [
+      "Singapore is one of only three surviving city-states in the world — and the only island one.",
+      "Hawker culture — the open-air food courts where a Michelin-listed meal can cost a few dollars — is on UNESCO's intangible heritage list.",
+      "About a quarter of the country's land is reclaimed from the sea, and the island has grown by roughly 25% since independence.",
+      "Changi's Jewel holds the world's tallest indoor waterfall, the 40-metre Rain Vortex.",
+    ],
+  },
+
+  Sofia: {
+    ...emptyPartnerAreas(),
+    tag: "New",
+    country: "Bulgaria",
+    currency: "EUR",
+    currencyName: "Euro",
+    emergency: "112",
+    police: "",
+    tz: "Europe/Sofia",
+    lat: 42.698, lon: 23.322,
+    wikiTitle: "Sofia",
+    language: "Bulgarian, written in Cyrillic — English is common in business and among younger people",
+    plugs: "Type F (Schuko) · 230 V",
+    water: "Tap water is safe; the city centre has public mineral-water fountains",
+    owner: "Concierge team · review quarterly",
+    updatedAt: "2026-10-15",
+    intro: "Bulgaria's capital sits in a high basin under Vitosha mountain — one of Europe's oldest cities, and since 1 January 2026 a euro country, which removes the currency question entirely. Sofia Airport (SOF) is 20 minutes from the centre by metro.",
+    transport: [
+      ["Sofia Metro — M1–M4, airport line", "https://www.metropolitan.bg"],
+      ["Urban Mobility Centre — tickets, trams & buses", "https://www.sofiatraffic.bg"],
+      ["Sofia Airport (SOF)", "https://sofia-airport.eu"],
+    ],
+    essentials: [
+      ["Currency", "EUR — Bulgaria adopted the euro on 1 January 2026"],
+      ["Getting around", "Metro line M4 runs from the airport; contactless bank cards are accepted on board city transport"],
+      ["Tipping", "Round up, or about 10% in restaurants"],
+      ["Script", "Cyrillic — signs in the centre are usually transliterated; one head-shake gotcha: nodding conventions can be reversed"],
+    ],
+    history: [
+      "Sofia is built on Serdica, a Thracian settlement that became a favoured Roman city — Emperor Constantine reportedly said 'Serdica is my Rome'. The red-brick Rotunda of St George from the 4th century still stands in a courtyard behind the presidency, making the city one of Europe's oldest continuously inhabited capitals.",
+      "The First Bulgarian Empire, founded in 681, was among Europe's earliest states, and it was Bulgarian scholars who developed and spread the Cyrillic alphabet in the 9th–10th centuries — a script now used by some 250 million people. Five centuries of Ottoman rule followed the medieval empires, ending with liberation in 1878, when Sofia became the capital of modern Bulgaria.",
+      "After the socialist decades — whose monumental architecture still marks the centre — Bulgaria joined the EU in 2007, entered the full Schengen area in January 2025, and adopted the euro on 1 January 2026. Sofia today is the country's political, academic and fast-growing tech centre.",
+    ],
+    funFacts: [
+      "Sofia's motto is 'Grows, but does not age' — it has been settled for some 7,000 years.",
+      "The city centre's 'Square of Tolerance' holds an Orthodox cathedral, a Catholic cathedral, a mosque and one of Europe's largest Sephardic synagogues within a few hundred metres of each other.",
+      "Vitosha mountain (2,290 m) begins at the tram terminus — locals ski before work in winter.",
+      "Sofia is one of the few capitals with natural hot mineral springs in its very centre; the fountains by the Central Baths run warm year-round.",
     ],
   },
 }

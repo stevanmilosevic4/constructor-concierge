@@ -4,6 +4,7 @@ import { C } from "../brand.js"
 import { useStore } from "../lib/store.js"
 import { POLICY_VERSION } from "../lib/policy.js"
 import { MODES, PARTNER_SECTIONS, PRACTICAL_FACTS, RELOCATION_FACTS, forAudience } from "../data/packSections.js"
+import { perDiemFor } from "../data/perdiem.js"
 import { QR } from "../components/ui.jsx"
 import { useCityImage } from "../lib/live.js"
 
@@ -149,6 +150,9 @@ export default function PackPrint({ city, mode }) {
           <Row a="Language" b={d.language} />
           <Row a="Plugs" b={d.plugs} />
           <Row a="Water" b={d.water} />
+          {(() => { const pd = perDiemFor(d.country); return pd.known
+            ? <Row a="Per diem (company rate)" b={pd.rate != null ? `${pd.rate} ${pd.currency}/day` : "Rate pending — concierge@constructor.org"} />
+            : null })()}
           {(d.essentials || []).filter((r) => !["currency", "emergency", "time zone", "language", "plugs", "water"].includes(String(r[0]).toLowerCase())).map((r, i) => <Row key={i} a={r[0]} b={r[1]} />)}
         </div>
 
@@ -200,7 +204,7 @@ export default function PackPrint({ city, mode }) {
             {d.hotels.map((h, i) => (
               <div key={i} className="mb-2" style={{ breakInside: "avoid" }}>
                 <div className="text-[11.5px] font-black" style={{ color: C.navy }}>{h.name}</div>
-                <div className="text-[10.5px]" style={{ color: C.muted }}>{[h.area, h.address, h.addressLocal].filter(Boolean).join(" · ")}</div>
+                <div className="text-[10.5px]" style={{ color: C.muted }}>{[h.area, h.address, h.addressLocal, h.url && h.url.replace(/^https?:\/\//, "")].filter(Boolean).join(" · ")}</div>
                 {h.note && <div className="text-[10.5px]" style={{ color: C.ink }}>{h.note}</div>}
                 {(h.near || []).length > 0 && (
                   <div className="mt-0.5 text-[10.5px]" style={{ color: C.muted }}>

@@ -122,11 +122,84 @@ export const COUNTRIES = {
       "Health insurance is compulsory and must be arranged within three months of arrival. Food culture runs to fondue, raclette, Rösti and, in Schaffhausen, the onion tart (Bölletünne) and Blauburgunder wine from the Klettgau villages. The canton is also the home of IWC watches, made here since 1868.",
     ],
   },
+
+  Singapore: {
+    images: {
+      geography: ["Marina Bay Sands", "Marina Bay Sands over the bay"],
+      history: ["Raffles' Landing Site", "Raffles' landing site on the Singapore River"],
+      culture: ["Lau Pa Sat", "Lau Pa Sat hawker centre"],
+    },
+    geography: [
+      "Singapore is an island city-state of about 735 km² — smaller than Hamburg — sitting one degree north of the equator at the tip of the Malay Peninsula, where the Strait of Malacca meets the South China Sea. That position on the world's busiest shipping lane is the entire explanation of its existence.",
+      "Around a quarter of the land has been reclaimed from the sea since independence, and planning runs decades ahead: the island is effectively one continuous, intensively green city, with nature reserves and a protected rainforest patch at its centre. There are no regions to speak of — the city is the country.",
+      "About six million people live here. The climate is equatorial: 26–32 °C, high humidity and short heavy downpours all year round, with no seasons. Life is engineered around it — covered walkways, fierce air-conditioning, and business dress that skips the jacket.",
+    ],
+    history: [
+      "A Malay trading settlement called Temasek stood here from the 14th century, but the modern city dates from 1819, when Stamford Raffles established a free port for the East India Company. On the shortest sea route between India and China, the colony grew into Britain's great eastern entrepôt, drawing Chinese, Malay, Indian and European migrants.",
+      "The surrender of Singapore to Japan in February 1942 — Churchill called it the worst disaster in British military history — shattered the colonial order. After the war came self-government under Lee Kuan Yew, a short-lived merger with Malaysia, and on 9 August 1965 a sudden, unsought independence: a port city with no hinterland, no army and no natural resources.",
+      "What followed is the most studied development story of the twentieth century. Export industry, then finance, logistics and technology lifted the island from third world to first in a generation; today Singapore ranks among the very highest countries by GDP per head and hosts the regional headquarters of half the world's multinationals.",
+    ],
+    culture: [
+      "Singapore is multicultural by design: Chinese, Malay, Indian and Eurasian communities, four official languages with English as the working one, and public holidays for Chinese New Year, Hari Raya, Deepavali and Christmas alike. The local English creole, Singlish, is affectionately impenetrable — 'can lah' means yes.",
+      "Order is a civic value and the fines are real: no eating or drinking on the MRT, no littering, no jaywalking, and chewing gum is famously not sold. In exchange the city is extraordinarily safe and clean at every hour. Business culture is punctual, direct and efficient; hand over business cards with both hands.",
+      "Food is the national obsession, and the hawker centre — UNESCO-listed open food courts where chicken rice or laksa costs a few dollars — is where everyone from students to ministers eats. Tipping is not expected; a 10% service charge and GST appear on the bill. Alcohol is heavily taxed — budget accordingly for client dinners.",
+    ],
+  },
+
+  Bulgaria: {
+    images: {
+      geography: ["Vitosha", "Vitosha mountain above Sofia"],
+      history: ["Alexander Nevsky Cathedral, Sofia", "Alexander Nevsky Cathedral, Sofia"],
+      culture: ["Shopska salad", "Shopska salad — the national starter"],
+    },
+    geography: [
+      "Bulgaria sits in the south-east of Europe, with the Danube forming its northern border with Romania, the Black Sea to the east, and Greece and Türkiye to the south. The Balkan range — Stara Planina, which gives the whole peninsula its name — runs straight across the middle of the country.",
+      "Sofia lies in a high basin in the west at about 550 m, directly under Vitosha mountain (2,290 m), whose silhouette closes every street view southward; the ski lifts start at the edge of town. The country has about 6.4 million people, with Sofia (around 1.3 million) by far the largest city, followed by Plovdiv and the Black Sea port of Varna.",
+      "Bulgaria joined the EU in 2007, became a full Schengen member in January 2025 — so there are no border checks from Germany — and adopted the euro on 1 January 2026, retiring the lev. For a traveller from the group's other locations, it is now operationally the simplest Balkan destination.",
+    ],
+    history: [
+      "Sofia is one of Europe's oldest cities: Thracian, then the Roman Serdica that Constantine favoured, its 4th-century St George Rotunda still standing behind the presidency. The First Bulgarian Empire, founded in 681, was among the continent's earliest states.",
+      "Bulgaria's deepest cultural export is the alphabet: in the 9th–10th centuries, scholars of the Preslav and Ohrid schools developed the Cyrillic script from the work of Cyril and Methodius, and Bulgaria spread it across the Orthodox world — some 250 million people write with it today. Five centuries under Ottoman rule followed the medieval empires, ending with the Liberation of 1878.",
+      "The twentieth century brought wars, a kingdom, and four socialist decades whose monumental architecture still stamps central Sofia. Since 1989 Bulgaria has rebuilt itself westward: NATO in 2004, the EU in 2007, Schengen in 2025, the euro in 2026 — with Sofia emerging as a significant software and outsourcing hub.",
+    ],
+    culture: [
+      "The famous gotcha is real: traditionally a Bulgarian head-shake means yes and a nod means no. Younger, international Bulgarians often reverse it for foreigners — so when it matters, ask for a spoken 'da' (yes) or 'ne' (no).",
+      "Hospitality is Balkan and generous: rakia as a welcome, shopska salad to start, long dinners. Name days are celebrated as much as birthdays. On 1 March everyone exchanges martenitsa — red-and-white yarn charms worn until the first stork or blossoming tree. The Cyrillic alphabet has its own national holiday on 24 May.",
+      "Bulgaria is an Orthodox country that wears religion lightly; Easter follows the Orthodox calendar. Cards are accepted nearly everywhere in Sofia and tipping is a round-up or about 10%. The famous rose oil from the Valley of Roses supplies half the world's perfume industry — a small bottle is the standard gift to take home.",
+    ],
+  },
 }
 
 /* General touristic recommendations per city — well-known sights, not
    partner endorsements. [name, one-line note] */
 export const PLACES = {
+  Singapore: [
+    ["Gardens by the Bay", "The Supertree Grove and two cooled conservatories — go at 19:45 or 20:45 for the free Garden Rhapsody light show.", "Gardens by the Bay"],
+    ["Marina Bay Sands SkyPark", "The observation deck across the three towers — the classic view over the bay and the port.", "Marina Bay Sands"],
+    ["Hawker centres", "Lau Pa Sat or Maxwell Food Centre — UNESCO-listed food culture at a few dollars a plate; Michelin-listed stalls included.", "Lau Pa Sat"],
+    ["Singapore Botanic Gardens", "A UNESCO World Heritage site with the National Orchid Garden — open from 5 a.m. for pre-meeting runs.", "Singapore Botanic Gardens"],
+    ["Chinatown", "Temples, shophouses and food streets — the Buddha Tooth Relic Temple anchors it.", "Chinatown, Singapore"],
+    ["Little India", "The most atmospheric quarter: spice shops, garlands, the 24-hour Mustafa Centre.", "Little India, Singapore"],
+    ["Kampong Glam & Sultan Mosque", "The Malay-Arab quarter — Haji Lane's murals and cafés beside the golden-domed mosque.", "Sultan Mosque"],
+    ["National Gallery", "Southeast Asia's largest art collection, in the former Supreme Court and City Hall.", "National Gallery Singapore"],
+    ["Merlion Park", "The half-lion half-fish symbol spouting into the bay — the photo everyone takes.", "Merlion"],
+    ["Sentosa", "The resort island by cable car — beaches, Universal Studios, the S.E.A. Aquarium.", "Sentosa"],
+    ["MacRitchie TreeTop Walk", "A suspension bridge through genuine rainforest canopy, twenty minutes from the CBD.", "MacRitchie Reservoir"],
+    ["Jewel Changi", "Worth landing early for: the 40-metre indoor Rain Vortex waterfall inside the airport.", "Jewel Changi Airport"],
+  ],
+  Sofia: [
+    ["Alexander Nevsky Cathedral", "The gold-domed symbol of Sofia, built to honour the Russian soldiers of the 1878 Liberation — the crypt holds Bulgaria's best icon collection.", "Alexander Nevsky Cathedral, Sofia"],
+    ["St George Rotunda", "A 4th-century Roman church — the oldest building in the city — hidden in a courtyard behind the presidency.", "Church of Saint George, Sofia"],
+    ["Serdica archaeological complex", "The excavated Roman city under the central metro station — you walk through it changing lines.", "Amphitheatre of Serdica"],
+    ["Vitosha Boulevard", "The pedestrian spine: cafés, shops and the mountain closing the view at the end.", "Vitosha Boulevard"],
+    ["Boyana Church", "A UNESCO World Heritage site at the foot of Vitosha — its 1259 frescoes pre-date Giotto.", "Boyana Church"],
+    ["The Square of Tolerance", "Orthodox cathedral, Catholic cathedral, Banya Bashi Mosque and the Sofia Synagogue within a few hundred metres.", "Sofia Synagogue"],
+    ["Central Mineral Baths", "The ornate former baths, now the city history museum — warm mineral fountains still run outside.", "Sofia Central Mineral Baths"],
+    ["National Palace of Culture (NDK)", "The vast socialist-era congress centre at the head of a park promenade.", "National Palace of Culture"],
+    ["Vitosha mountain", "Tram to the foot, lift to 1,800 m — hiking in summer, skiing above the city in winter.", "Vitosha"],
+    ["National History Museum & Boyana", "The state collection — Thracian gold treasures included — in the former residence of the communist leadership.", "National Historical Museum (Bulgaria)"],
+    ["Rila Monastery (day trip)", "Bulgaria's spiritual heart, two hours south — UNESCO-listed, painted arcades in a mountain valley.", "Rila Monastery"],
+  ],
   Bremen: [
     ["Marktplatz, Town Hall & Roland", "The UNESCO-listed heart of the city — the Gothic-Renaissance Town Hall and the 1404 Roland statue, symbol of civic freedom.", "Bremen City Hall"],
     ["Bremen Town Musicians", "The bronze donkey, dog, cat and rooster of the Grimm tale stand beside the Town Hall; rubbing the donkey's legs is the local ritual.", "Town Musicians of Bremen"],

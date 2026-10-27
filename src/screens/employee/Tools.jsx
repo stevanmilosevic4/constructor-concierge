@@ -7,36 +7,55 @@ import { C } from "../../brand.js"
 import { useStore, update, colleaguesInTown } from "../../lib/store.js"
 import { PER_DIEM_SOURCES, CONTACTS, fmtDate, daysUntil } from "../../lib/policy.js"
 import { VISA_MATRIX, PASSPORTS, VISA_DESTS } from "../../data/cities.js"
+import { PER_DIEM_ENTITIES, PER_DIEM_COUNTRIES, PER_DIEM_UPDATED, perDiemFor } from "../../data/perdiem.js"
 import { Card, SectionTitle, Label, inputCls, inputStyle, Pill, Banner } from "../../components/ui.jsx"
 
 /* ------------------------------------------------------------------ */
 
-function PerDiem() {
-  const [entity, setEntity] = useState("Germany")
-  const src = PER_DIEM_SOURCES[entity]
+function PerDiem({ initialCountry }) {
+  const [country, setCountry] = useState(initialCountry && PER_DIEM_COUNTRIES.includes(initialCountry) ? initialCountry : PER_DIEM_COUNTRIES[0])
+  const [entity, setEntity] = useState(PER_DIEM_ENTITIES[0])
+  const res = perDiemFor(country, entity)
+  const srcCountry = PER_DIEM_SOURCES[country.split(" ")[0]] || null
   return (
     <Card>
       <div className="mb-2 flex items-center gap-2 text-sm font-black" style={{ color: C.navy }}>
         <Calculator size={15} style={{ color: C.confident }} /> Per diem lookup
       </div>
       <p className="mb-3 text-xs leading-relaxed" style={{ color: C.muted }}>
-        Meals follow the statutory rate of your <b>employing entity's country</b> — not the destination's habit,
-        and not a company table. The app links the live source instead of quoting figures, because the rates
-        change annually and a stale number is worse than none.
+        Pick where you are going and which Constructor entity you travel for — the correct daily rate comes out.
       </p>
-      <Label>Where is your employing entity?</Label>
-      <select className={inputCls} style={inputStyle} value={entity} onChange={(e) => setEntity(e.target.value)}>
-        {Object.keys(PER_DIEM_SOURCES).map((k) => <option key={k}>{k}</option>)}
-      </select>
-      <div className="mt-3 rounded-lg p-3" style={{ backgroundColor: C.paper }}>
-        <div className="text-sm font-bold" style={{ color: C.navy }}>{src.source}</div>
-        <p className="mt-1 text-xs leading-relaxed" style={{ color: C.muted }}>{src.note}</p>
-        <a href={src.url} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: C.confident }}>
-          Open the current rates <ExternalLink size={12} />
-        </a>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <Label>Destination country</Label>
+          <select className={inputCls} style={inputStyle} value={country} onChange={(e) => setCountry(e.target.value)}>
+            {PER_DIEM_COUNTRIES.map((k) => <option key={k} value={k}>{k}</option>)}
+          </select>
+        </div>
+        <div>
+          <Label>You travel for</Label>
+          <select className={inputCls} style={inputStyle} value={entity} onChange={(e) => setEntity(e.target.value)}>
+            {PER_DIEM_ENTITIES.map((k) => <option key={k}>{k}</option>)}
+          </select>
+        </div>
       </div>
-      <p className="mt-2 text-[11px]" style={{ color: C.muted }}>
-        Breakfast is separate: should be in the room rate; if not, up to 15 EUR/CHF/USD per day against a receipt.
+      <div className="mt-3 rounded-lg p-4 text-center" style={{ backgroundColor: res.rate != null ? "#E2FAF3" : C.paper }}>
+        {res.rate != null ? (
+          <>
+            <div className="text-3xl font-black" style={{ color: "#00654C" }}>{res.rate} {res.currency}</div>
+            <div className="text-xs font-semibold" style={{ color: C.muted }}>per day · {country} · {entity}</div>
+          </>
+        ) : (
+          <div className="text-sm font-bold" style={{ color: C.muted }}>
+            Rate pending — please contact{" "}
+            <a href="mailto:concierge@constructor.org" style={{ color: C.confident }}>concierge@constructor.org</a>
+          </div>
+        )}
+      </div>
+      <p className="mt-2 text-[11px] leading-relaxed" style={{ color: C.muted }}>
+        Rates follow company policy and the statutory per-diem rates; table last updated {PER_DIEM_UPDATED}.
+        {srcCountry && <> Statutory source for {country}: <a href={srcCountry.url} target="_blank" rel="noreferrer" className="font-bold" style={{ color: C.confident }}>{srcCountry.source}</a>.</>}
+        {" "}Breakfast is separate: should be in the room rate; if not, up to 15 EUR/CHF/USD per day against a receipt.
       </p>
     </Card>
   )
